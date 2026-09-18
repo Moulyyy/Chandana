@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy 23rd Birthday Chandana! ✨ With All My Love</title>
+  <meta name="description" content="A magical, romantic 23rd birthday celebration for Chandana - BDS 3rd Year, the prettiest girl with the sweetest smile.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
+  
+  <!-- Google Fonts for romantic typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Floating background particles canvas -->
+  <canvas id="sparkle-canvas"></canvas>
+  <canvas id="fireworks-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Audio Controls -->
+  <div class="audio-control-container">
+    <button id="music-toggle-btn" class="glow-btn glass-pill" aria-label="Toggle Romantic Music">
+      <span class="music-icon">🎵</span>
+      <span id="music-btn-text">Play Romantic Music</span>
+    </button>
+  </div>
+
+  <!-- Main Container -->
+  <div class="page-wrapper">
+    
+    <!-- Hero Section -->
+    <header class="hero-section text-center">
+      <div class="floating-badge animate-bounce">
+        <span>👑 To My Favourite Person in the World</span>
+      </div>
+      <h1 class="romantic-title">Happy 23rd Birthday,<br><span class="highlight-name">Dr. Chandana! 🌸</span></h1>
+      <p class="subtitle">
+        Future BDS Doctor, owner of the world's most dazzling smile, and the girl who stole my heart 
+        <span class="together-pill">✨ 1 Year & 3 Months of Pure Magic ✨</span>
+      </p>
+
+      <!-- Love Counter -->
+      <div class="counter-card glass-card">
+        <div class="counter-header">
+          <span class="heart-pulse">💖</span>
+          <h3>Loving You For</h3>
+        </div>
+        <div class="counter-grid">
+          <div class="counter-item">
+            <span class="count-val" id="days-count">460</span>
+            <span class="count-label">Days</span>
+          </div>
+          <div class="counter-item">
+            <span class="count-val" id="hours-count">11,040</span>
+            <span class="count-label">Hours</span>
+          </div>
+          <div class="counter-item">
+            <span class="count-val" id="minutes-count">662,400</span>
+            <span class="count-label">Minutes</span>
+          </div>
+          <div class="counter-item">
+            <span class="count-val" id="seconds-count">...</span>
+            <span class="count-label">Seconds</span>
+          </div>
+        </div>
+        <p class="counter-footnote">...and every single second has been my favorite blessing! 💕</p>
+      </div>
+
+      <div class="hero-scroll-cue">
+        <span>Scroll down for your birthday surprise</span>
+        <div class="arrow-down">↓</div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: The Birthday Cake Ceremony -->
+    <section id="cake-ceremony-section" class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Interactive Ceremony</span>
+        <h2 class="section-title">Blow Your Birthday Candles & Cut The Cake! 🎂</h2>
+        <p class="section-desc" id="cake-instruction">
+          Tap or hover over each candle to blow it out, or tap "Blow All Candles" to make your 23rd wish!
+        </p>
+      </div>
+
+      <div class="cake-container">
+        <!-- The 3D-styled SVG Strawberry Cake -->
+        <div class="cake-stage" id="cake-stage">
+          <!-- Plate -->
+          <div class="cake-plate"></div>
+          
+          <!-- Cake Base Body -->
+          <div class="cake-body" id="cake-body">
+            <!-- Cut slice visualization overlay -->
+            <div class="cake-slice-cut" id="cake-slice-cut">
+              <div class="slice-inner">
+                <span class="slice-strawberry">🍓</span>
+                <span class="slice-heart">💖</span>
+              </div>
+            </div>
+
+            <!-- Frosting drips -->
+            <div class="frosting-drips">
+              <span class="drip drip-1"></span>
+              <span class="drip drip-2"></span>
+              <span class="drip drip-3"></span>
+              <span class="drip drip-4"></span>
+              <span class="drip drip-5"></span>
+              <span class="drip drip-6"></span>
+              <span class="drip drip-7"></span>
+            </div>
+
+            <!-- Cake cream layers and fruit toppings -->
+            <div class="cake-top-decorations">
+              <span class="berry b1">🍓</span>
+              <span class="berry b2">🍒</span>
+              <span class="berry b3">🍓</span>
+              <span class="berry b4">🍓</span>
+              <span class="berry b5">🍒</span>
+              <span class="wafer w1">✨</span>
+              <span class="wafer w2">💖</span>
+            </div>
+
+            <!-- Candles on Cake (2 and 3 candles for 23, or 5 romantic candles) -->
+            <div class="candles-wrapper" id="candles-wrapper">
+              <div class="candle candle-1" data-index="1" title="Tap to blow out!">
+                <div class="flame" id="flame-1"></div>
+                <div class="smoke" id="smoke-1"></div>
+                <div class="wick"></div>
+                <div class="candle-stick"></div>
+              </div>
+              <div class="candle candle-2" data-index="2" title="Tap to blow out!">
+                <div class="flame" id="flame-2"></div>
+                <div class="smoke" id="smoke-2"></div>
+                <div class="wick"></div>
+                <div class="candle-stick"></div>
+              </div>
+              <div class="candle candle-3" data-index="3" title="Tap to blow out!">
+                <div class="flame" id="flame-3"></div>
+                <div class="smoke" id="smoke-3"></div>
+                <div class="wick"></div>
+                <div class="candle-stick candle-gold">23</div>
+              </div>
+              <div class="candle candle-4" data-index="4" title="Tap to blow out!">
+                <div class="flame" id="flame-4"></div>
+                <div class="smoke" id="smoke-4"></div>
+                <div class="wick"></div>
+                <div class="candle-stick"></div>
+              </div>
+              <div class="candle candle-5" data-index="5" title="Tap to blow out!">
+                <div class="flame" id="flame-5"></div>
+                <div class="smoke" id="smoke-5"></div>
+                <div class="wick"></div>
+                <div class="candle-stick"></div>
+              </div>
+            </div>
+
+            <!-- Cake Message Icing -->
+            <div class="cake-icing-text">
+              <span>Happy 23rd Chandana 💕</span>
+            </div>
+          </div>
+
+          <!-- Interactive Knife (appears when candles are out) -->
+          <div class="cake-knife" id="cake-knife">
+            <div class="knife-blade"></div>
+            <div class="knife-handle"></div>
+            <span class="knife-tooltip">Click to cut! 🍰</span>
+          </div>
+
+          <!-- Cut Cake Slice on a little dish -->
+          <div class="served-slice" id="served-slice">
+            <div class="served-slice-plate">
+              <div class="served-piece">🍰</div>
+              <div class="served-note">For the sweetest birthday girl! ✨</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="cake-actions text-center">
+          <button id="blow-candles-btn" class="glow-btn romantic-btn">
+            💨 Blow All Candles
+          </button>
+          <button id="cut-cake-btn" class="glow-btn romantic-btn hidden">
+            🔪 Cut A Slice of Cake!
+          </button>
+          <button id="replay-ceremony-btn" class="secondary-btn hidden">
+            🔄 Relive The Cake Cut
+          </button>
+        </div>
+
+        <!-- Celebration banner (shows after cutting cake) -->
+        <div class="celebration-banner glass-card hidden" id="celebration-banner">
+          <div class="banner-sparkle">🎉 🥳 🎂 🥂 ✨</div>
+          <h3>HAPPY 23rd BIRTHDAY, MY GORGEOUS CHANDANA!</h3>
+          <p>
+            May your 23rd year be filled with top BDS distinctions, easy root canals, unlimited chocolates,
+            and an endless flood of happiness and love from me! 💖
+          </p>
+          <div class="wish-toast">
+            <span class="toast-heart">💌</span>
+            <em>"Your smile is the brightest thing I've ever seen, Dr. Chandana!"</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Reasons Why I Love You - Interactive Love Jar -->
+    <section class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Little Love Notes</span>
+        <h2 class="section-title">The "Why You're My Favourite" Jar 💌</h2>
+        <p class="section-desc">
+          Tap the jar to pull out a sweet origami note. Pick as many as you like!
+        </p>
+      </div>
+
+      <div class="love-jar-container">
+        <div class="jar-wrapper" id="love-jar" title="Click me to pull a love note!">
+          <div class="jar-lid"></div>
+          <div class="jar-body glass-card">
+            <div class="floating-origamis">
+              <span class="folded-note n1">💌</span>
+              <span class="folded-note n2">💖</span>
+              <span class="folded-note n3">🎀</span>
+              <span class="folded-note n4">💕</span>
+              <span class="folded-note n5">✨</span>
+              <span class="folded-note n6">🌸</span>
+            </div>
+            <div class="jar-label">
+              <span>Chandana's</span>
+              <strong>Love Notes</strong>
+              <small>Tap to open 👆</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revealed Love Card -->
+        <div class="revealed-note-card glass-card" id="revealed-note-card">
+          <div class="note-card-icon">💝</div>
+          <h4 id="note-card-title">A Sweet Truth #1</h4>
+          <p id="note-card-text">
+            "Your smile literally lights up my darkest days. You're the kindest, cutest, and most caring person I know."
+          </p>
+          <button id="next-note-btn" class="glow-btn romantic-btn-small">Pull Another Note ✨</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: The Birthday Queen Gallery (Her 25 Photos) -->
+    <section class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">The Birthday Girl</span>
+        <h2 class="section-title">The Prettiest Girl in the World 👑</h2>
+        <p class="section-desc">
+          23 reasons why I fall in love with you every single day. Click on any photo to zoom in!
+        </p>
+      </div>
+
+      <!-- Filter / View Controls -->
+      <div class="gallery-controls text-center">
+        <button class="filter-chip active" data-filter="all">All Photos (25)</button>
+        <button class="filter-chip" data-filter="favorites">Sweetest Smiles 💕</button>
+        <button class="filter-chip" data-filter="glamour">Princess Looks ✨</button>
+      </div>
+
+      <!-- Her Photo Grid (Polaroid Style) -->
+      <div class="polaroid-grid" id="her-photo-grid">
+        <!-- Dynamically injected via JavaScript for smooth staggered animations and captions -->
+      </div>
+    </section>
+
+    <!-- SECTION 4: Our Love Story Scrapbook (The 'us' couple photos) -->
+    <section class="content-section scrapbook-section">
+      <div class="section-header text-center">
+        <span class="section-tag">1 Year & 3 Months Together</span>
+        <h2 class="section-title">Our Sweetest Adventures Together 💑</h2>
+        <p class="section-desc">
+          15 months of unforgettable memories, infinite laughs, endless late-night talks, and growing together.
+        </p>
+      </div>
+
+      <div class="scrapbook-container glass-card">
+        <div class="scrapbook-slider-wrapper">
+          <div class="scrapbook-track" id="couple-photo-track">
+            <!-- Dynamically populated with us/ folder photos -->
+          </div>
+        </div>
+
+        <div class="slider-nav">
+          <button id="slider-prev-btn" class="nav-arrow" aria-label="Previous Memory">❮</button>
+          <div class="slider-dots" id="slider-dots"></div>
+          <button id="slider-next-btn" class="nav-arrow" aria-label="Next Memory">❯</button>
+        </div>
+
+        <div class="memory-caption-box text-center">
+          <h4 id="memory-caption-title">Our Favorite Moments</h4>
+          <p id="memory-caption-text">"Every moment spent with you becomes a treasured memory I never want to forget."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Romantic Love Letter with Wax Seal -->
+    <section class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">From My Heart To Yours</span>
+        <h2 class="section-title">A Letter For Chandana On Her 23rd 📜</h2>
+        <p class="section-desc">Click the wax seal to break the envelope open and read your letter.</p>
+      </div>
+
+      <div class="envelope-container">
+        <!-- The Closed Envelope -->
+        <div class="envelope-wrapper" id="envelope-wrapper">
+          <div class="envelope-back"></div>
+          <div class="envelope-flap" id="envelope-flap"></div>
+          <div class="wax-seal" id="wax-seal" title="Tap to unseal!">
+            <span>❤</span>
+            <small>C &amp; Me</small>
+          </div>
+          <div class="envelope-pocket"></div>
+          <div class="envelope-hint">Tap seal to open ✨</div>
+        </div>
+
+        <!-- The Unfolded Letter Paper -->
+        <div class="letter-paper glass-card hidden" id="letter-paper">
+          <div class="letter-decorations">
+            <span class="letter-stamp">🌸 BDS Queen</span>
+            <span class="letter-date">September 18th • 23rd Birthday</span>
+          </div>
+          <div class="letter-body">
+            <h3>My Dearest Chandana,</h3>
+            <p>
+              Happy 23rd Birthday, my love! Seeing you grow, chase your BDS dreams with so much passion, 
+              and smile through long study hours makes me so proud of you every single day.
+            </p>
+            <p>
+              It feels like just yesterday we began this journey, and here we are—<strong>1 year and 3 months</strong> 
+              of holding hands, sharing meals, comforting each other, and laughing at the silliest things. 
+              You bring a warmth into my life that no one else ever could.
+            </p>
+            <p>
+              They say dentists know how to fix teeth, but you have this magical gift of fixing my bad days 
+              with just a single glance or sweet voice note. You are compassionate, hardworking, stunningly gorgeous, 
+              and the greatest gift I could ever ask for.
+            </p>
+            <p>
+              On your 23rd birthday, I wish you all the success in your 3rd year BDS, painless exams, patient smiles, 
+              and the happiest memories ahead. I promise to always stand by you, cheer the loudest for you, and love 
+              you more than yesterday, but less than tomorrow.
+            </p>
+            <div class="letter-sign-off">
+              <p>Forever and always yours,</p>
+              <div class="signature">With All My Heart 💕</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: The Virtual Birthday Gift Box -->
+    <section class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Birthday Treat</span>
+        <h2 class="section-title">Open Your Surprise Gift 🎁</h2>
+        <p class="section-desc">Tap the gift box to untie the ribbon and reveal your birthday vouchers!</p>
+      </div>
+
+      <div class="gift-box-container text-center">
+        <div class="gift-box" id="gift-box" title="Tap to open!">
+          <div class="gift-lid" id="gift-lid">
+            <div class="gift-bow">🎀</div>
+            <div class="lid-ribbon"></div>
+          </div>
+          <div class="gift-base">
+            <div class="base-ribbon"></div>
+            <div class="gift-sparkles-inside">✨</div>
+          </div>
+          <div class="gift-tap-hint">Tap to unbox 🎁</div>
+        </div>
+
+        <!-- Revealed Birthday Vouchers -->
+        <div class="vouchers-grid hidden" id="vouchers-grid">
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #1</div>
+            <h4>Unlimited Warm Hugs &amp; Cuddles 🤗</h4>
+            <p>Valid anytime Chandana feels stressed, tired after dental clinics, or just needs love. Never expires!</p>
+            <span class="redeemed-tag">Activated Forever 💖</span>
+          </div>
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #2</div>
+            <h4>Romantic Candlelight Dinner Date 🕯️</h4>
+            <p>Your favorite restaurant, favorite dessert, and zero interruptions. Just you and me celebrating you!</p>
+            <span class="redeemed-tag">Ready to Claim 🍷</span>
+          </div>
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #3</div>
+            <h4>Personal Study Break Butler ☕</h4>
+            <p>Late night BDS revision snacks, coffee runs, back massages, and patient listener on command.</p>
+            <span class="redeemed-tag">Always Available 🩺</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="romantic-footer text-center">
+      <div class="footer-hearts">💖 ✨ 🌸 ✨ 💖</div>
+      <p>Crafted with endless love for Chandana's 23rd Birthday</p>
+      <small>Celebrating 1 year, 3 months, and a lifetime more to go 💍</small>
+      <div class="back-to-top">
+        <button id="back-to-top-btn" class="glow-btn glass-pill">↑ Back to Cake</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Fullscreen Photo Lightbox Modal -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightbox-close" aria-label="Close photo">×</button>
+      <div class="lightbox-img-wrapper">
+        <img id="lightbox-img" src="" alt="Chandana's Photo">
+      </div>
+      <div class="lightbox-caption" id="lightbox-caption">
+        <h3>Chandana</h3>
+        <p>My beautiful girl</p>
+      </div>
+      <div class="lightbox-actions">
+        <button id="lightbox-prev" class="lightbox-nav-btn">❮</button>
+        <button id="lightbox-heart-btn" class="lightbox-heart-btn">Send Love 💖</button>
+        <button id="lightbox-next" class="lightbox-nav-btn">❯</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
