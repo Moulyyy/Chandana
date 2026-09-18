@@ -1,34 +1,798 @@
 /**
- * CHANDANA'S 23RD BIRTHDAY - INTERACTIVE EXPERIENCE
+ * ==============================================================================
+ * CHANDANA'S 23RD BIRTHDAY - MODERN INTERACTIVE CELEBRATION
+ * ==============================================================================
  * Features:
- * - Web Audio API synthesizer: Romantic background music box & Birthday song
- * - Interactive Cake Ceremony: Candle blowing, knife slice, smoke, slice serving
- * - Particle Systems: Confetti, Fireworks, Floating Sparkles & Cursor trail
- * - Photo Showcases: Her 25 Polaroid Photos & Couple Scrapbook Slider
- * - Interactive Love Jar & Origami Notes
- * - Wax-sealed Love Letter & Gift Box
+ * - Romantic "Slide to Unwrap" Ribbon Opening Experience
+ * - Procedural Romantic Synthesizer & Audio Engine (Plays upon unwrap & celebration)
+ * - Birthday Countdown to 20th September 12:00 AM Midnight
+ * - Interactive 3-Tier Cake with Hidden Flanking Cats that Pop In upon Candle Blowing
+ * - Heavy & Chaotic Candle Blowing Celebration (Screen Shake, Dense Fireworks, Balloon Swarms)
+ * - Live Relationship Counter ("Loving You For...") placed right after the cake
+ * - Interactive Drag-to-Aim Bow & Arrow Game with Moving Heart Target
+ * - Pop-Up 3D Envelope & Slide-Out Love Letter with "Put Letter Back" Replay Loop
+ * - Strictly Background Floating Hearts, Balloons, and Strawberries Layer (z-index: 1)
+ * - Symmetrical 23 Solo Portraits for her 23rd Birthday (3 per row, 2 centered)
+ * - 10 Couple Memories Slideshow with Arrows and Touch Swipe
+ * - Heartfelt Customizable Notes
+ * ==============================================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initLoveCounter();
+  initSlideToUnwrap();
+  initAudioEngine();
+  initMusicToggle();
   initBackgroundSparkles();
   initConfettiAndFireworks();
-  initAudioEngine();
+  initBirthdayCountdown();
   initCakeCeremony();
-  initLoveJar();
-  initHerGallery();
-  initCoupleScrapbook();
-  initEnvelopeAndLetter();
-  initGiftBox();
-  initBackToTop();
+  initLoveCounter();
+  initCupidArchery();
+  initPoppableBalloons();
+  initGalleryAndSlideshow();
 });
 
 /* ==========================================================================
-   1. LOVE COUNTER (1 Year, 3 Months & Live Seconds)
+   1. ROMANTIC SLIDE-TO-UNWRAP OPENING EXPERIENCE
+   ========================================================================== */
+function initSlideToUnwrap() {
+  const curtain = document.getElementById('intro-curtain');
+  const track = document.getElementById('slide-unwrap-track');
+  const handle = document.getElementById('slide-unwrap-handle');
+  const progress = document.getElementById('slide-unwrap-progress');
+  const hintText = document.getElementById('slide-unwrap-text');
+  if (!curtain || !track || !handle) return;
+
+  let isDragging = false;
+  let startX = 0;
+  let currentX = 0;
+  let maxSlide = 0;
+  let hasOpened = false;
+
+  function updateMaxSlide() {
+    maxSlide = track.clientWidth - handle.clientWidth - 10;
+  }
+  window.addEventListener('resize', updateMaxSlide);
+  updateMaxSlide();
+
+  function triggerUnwrap() {
+    if (hasOpened) return;
+    hasOpened = true;
+
+    // Unlock Web Audio context
+    if (window.getAudioContext) {
+      const ctx = window.getAudioContext();
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+    }
+
+    if (progress) progress.style.width = '100%';
+    if (hintText) hintText.textContent = "Unwrapped with love! ✨";
+
+    setTimeout(() => {
+      curtain.classList.add('opened');
+
+      // Auto-start Ed Sheeran's "Perfect" melody
+      if (window.playTrack) {
+        window.playTrack('perfect');
+      }
+
+      // Initial opening burst of confetti
+      if (window.triggerConfettiExplosion) {
+        window.triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.45, 60);
+      }
+    }, 250);
+  }
+
+  // Pointer / Touch Dragging
+  function onPointerDown(e) {
+    if (hasOpened) return;
+    isDragging = true;
+    updateMaxSlide();
+    startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    handle.style.transition = 'none';
+    if (progress) progress.style.transition = 'none';
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging || hasOpened) return;
+    const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    let diff = clientX - startX;
+    diff = Math.max(0, Math.min(diff, maxSlide));
+
+    currentX = diff;
+    handle.style.left = `${5 + diff}px`;
+    if (progress) progress.style.width = `${((diff + 20) / track.clientWidth) * 100}%`;
+
+    // If dragged past 85% of track, trigger unwrap!
+    if (diff >= maxSlide * 0.85) {
+      isDragging = false;
+      triggerUnwrap();
+    }
+  }
+
+  function onPointerUp() {
+    if (!isDragging || hasOpened) return;
+    isDragging = false;
+    // Snap back if released before unwrap
+    handle.style.transition = 'left 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+    handle.style.left = '5px';
+    if (progress) {
+      progress.style.transition = 'width 0.3s ease';
+      progress.style.width = '0%';
+    }
+  }
+
+  handle.addEventListener('mousedown', onPointerDown);
+  window.addEventListener('mousemove', onPointerMove);
+  window.addEventListener('mouseup', onPointerUp);
+
+  handle.addEventListener('touchstart', onPointerDown, { passive: true });
+  window.addEventListener('touchmove', onPointerMove, { passive: true });
+  window.addEventListener('touchend', onPointerUp);
+
+  // Accessible click to unwrap smoothly
+  track.addEventListener('click', (e) => {
+    if (hasOpened) return;
+    if (e.target !== handle) {
+      updateMaxSlide();
+      handle.style.transition = 'left 0.4s ease';
+      handle.style.left = `${maxSlide}px`;
+      if (progress) {
+        progress.style.transition = 'width 0.4s ease';
+        progress.style.width = '100%';
+      }
+      setTimeout(triggerUnwrap, 380);
+    }
+  });
+
+  // Global first tap audio unlocker (Supports mobile touch & desktop)
+  ['click', 'touchstart', 'pointerdown'].forEach(ev => {
+    document.addEventListener(ev, function unlockAudio() {
+      if (window.getAudioContext) {
+        const ctx = window.getAudioContext();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+      }
+    }, { once: true, passive: true });
+  });
+}
+
+function initMusicToggle() {
+  const pill = document.getElementById('floating-music-pill');
+  const pillText = document.getElementById('music-pill-text');
+  const bgm = document.getElementById('romantic-bgm-audio');
+  if (!pill) return;
+
+  function updatePillState() {
+    if (bgm && !bgm.paused) {
+      pill.classList.add('playing');
+      if (pillText) pillText.textContent = "Clair de Lune 🌸";
+    } else {
+      pill.classList.remove('playing');
+      if (pillText) pillText.textContent = "Play Romantic Piano 🎵";
+    }
+  }
+
+  pill.addEventListener('click', () => {
+    if (bgm) {
+      if (bgm.paused) {
+        bgm.volume = 0.65;
+        bgm.play().then(updatePillState).catch(() => {});
+      } else {
+        bgm.pause();
+        updatePillState();
+      }
+    } else {
+      window.playTrack('romantic');
+      pill.classList.add('playing');
+    }
+  });
+
+  if (bgm) {
+    bgm.addEventListener('play', updatePillState);
+    bgm.addEventListener('pause', updatePillState);
+  }
+}
+
+/* ==========================================================================
+   2. PROCEDURAL WEB AUDIO SYNTHESIZER & ROMANTIC SFX ENGINE
+   ========================================================================== */
+let audioCtx = null;
+let masterGain = null;
+let currentTrack = 'perfect';
+let isMusicPlaying = false;
+let musicTimer = null;
+let accompTimer = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+    masterGain.connect(audioCtx.destination);
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+window.getAudioContext = getAudioContext;
+
+function initAudioEngine() {
+  window.playSound = {
+    blow: playCandleBlowSFX,
+    pop: playPopSFX,
+    arrow: playArrowShotSFX,
+    chime: playChimeSFX,
+    twang: playTwangSFX,
+    miss: playMissSFX
+  };
+}
+
+function playInstrumentNote(freq, startTime, duration = 0.8, type = 'acoustic', volume = 0.3) {
+  const ctx = getAudioContext();
+  if (!ctx || !freq) return;
+
+  const now = Math.max(ctx.currentTime, startTime);
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const noteGain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  if (type === 'acoustic') {
+    osc1.type = 'triangle';
+    osc2.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, now);
+    osc2.frequency.setValueAtTime(freq * 2.0, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2400, now);
+    filter.frequency.exponentialRampToValueAtTime(600, now + duration);
+
+    noteGain.gain.setValueAtTime(volume, now);
+    noteGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  } else {
+    osc1.type = 'sawtooth';
+    osc2.type = 'triangle';
+    osc1.frequency.setValueAtTime(freq, now);
+    osc2.frequency.setValueAtTime(freq * 0.998, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1400, now);
+    filter.frequency.exponentialRampToValueAtTime(450, now + duration);
+
+    noteGain.gain.setValueAtTime(volume * 0.7, now);
+    noteGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  }
+
+  osc1.connect(filter);
+  osc2.connect(filter);
+  filter.connect(noteGain);
+  noteGain.connect(masterGain || ctx.destination);
+
+  osc1.start(now);
+  osc2.start(now);
+  osc1.stop(now + duration + 0.05);
+  osc2.stop(now + duration + 0.05);
+}
+
+function playCandleBlowSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const bufferSize = Math.floor(ctx.sampleRate * 0.45);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.14));
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, ctx.currentTime);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain || ctx.destination);
+    noise.start();
+  } catch (e) { }
+}
+
+function playPopSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    playInstrumentNote(520, ctx.currentTime, 0.15, 'acoustic', 0.25);
+    playInstrumentNote(880, ctx.currentTime + 0.04, 0.2, 'acoustic', 0.2);
+  } catch (e) { }
+}
+
+function playArrowShotSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    playInstrumentNote(350, ctx.currentTime, 0.25, 'acoustic', 0.3);
+    playInstrumentNote(659.25, ctx.currentTime + 0.15, 0.6, 'acoustic', 0.25);
+    playInstrumentNote(987.77, ctx.currentTime + 0.25, 0.8, 'acoustic', 0.28);
+  } catch (e) { }
+}
+
+function playChimeSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+    notes.forEach((freq, idx) => {
+      playInstrumentNote(freq, ctx.currentTime + idx * 0.09, 0.9, 'acoustic', 0.24);
+    });
+  } catch (e) { }
+}
+
+function playTwangSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    playInstrumentNote(240, ctx.currentTime, 0.2, 'sawtooth', 0.35);
+    playInstrumentNote(360, ctx.currentTime + 0.04, 0.16, 'acoustic', 0.25);
+  } catch (e) { }
+}
+
+function playMissSFX() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(360, now);
+    osc.frequency.exponentialRampToValueAtTime(110, now + 0.32);
+    gain.gain.setValueAtTime(0.22, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + 0.32);
+    osc.connect(gain);
+    gain.connect(masterGain || ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.33);
+  } catch (e) { }
+}
+
+/* Romantic Music Box & Celesta Synthesizer */
+function playRomanticMusicBoxNote(freq, startTime, duration = 1.4, volume = 0.22) {
+  const ctx = getAudioContext();
+  if (!ctx || !freq || freq <= 0) return;
+
+  const now = Math.max(ctx.currentTime, startTime);
+
+  // Dual detuned oscillators for lush acoustic chime
+  const oscMain = ctx.createOscillator();
+  const oscDetune = ctx.createOscillator();
+  const oscBell = ctx.createOscillator(); // Inharmonic bell sparkle
+
+  const mainGain = ctx.createGain();
+  const bellGain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  // Pure sweet singing sine waves
+  oscMain.type = 'sine';
+  oscDetune.type = 'sine';
+  oscBell.type = 'sine';
+
+  oscMain.frequency.setValueAtTime(freq, now);
+  oscDetune.frequency.setValueAtTime(freq * 1.0025, now); // +4 cents chorus
+  oscBell.frequency.setValueAtTime(freq * 2.756, now);    // Bell tine chime
+
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(Math.min(3600, freq * 4.5), now);
+  filter.Q.setValueAtTime(1.8, now);
+
+  // Soft natural music-box attack and crystalline ring
+  mainGain.gain.setValueAtTime(0.0001, now);
+  mainGain.gain.linearRampToValueAtTime(volume, now + 0.008);
+  mainGain.gain.exponentialRampToValueAtTime(0.0005, now + duration);
+
+  // High sparkle bell fades quickly
+  bellGain.gain.setValueAtTime(volume * 0.35, now);
+  bellGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+
+  oscMain.connect(mainGain);
+  oscDetune.connect(mainGain);
+  oscBell.connect(bellGain);
+
+  mainGain.connect(filter);
+  bellGain.connect(filter);
+  filter.connect(masterGain || ctx.destination);
+
+  oscMain.start(now);
+  oscDetune.start(now);
+  oscBell.start(now);
+
+  oscMain.stop(now + duration + 0.05);
+  oscDetune.stop(now + duration + 0.05);
+  oscBell.stop(now + 0.25);
+}
+
+function playWarmCelloPad(freq, startTime, duration = 2.4, volume = 0.07) {
+  const ctx = getAudioContext();
+  if (!ctx || !freq || freq <= 0) return;
+
+  const now = Math.max(ctx.currentTime, startTime);
+  const osc = ctx.createOscillator();
+  const filter = ctx.createBiquadFilter();
+  const gain = ctx.createGain();
+
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(freq, now);
+
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(320, now);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.linearRampToValueAtTime(volume, now + 0.5);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(masterGain || ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + duration + 0.05);
+}
+
+// Background Romantic Love Melody: "Can't Help Falling In Love"
+function startRomanticLoveMelody() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  if (musicTimer) clearTimeout(musicTimer);
+  if (accompTimer) clearInterval(accompTimer);
+
+  // Frequencies (Hz)
+  const D3 = 146.83, E3 = 164.81, Fs3 = 185.00, G3 = 196.00, A3 = 220.00, B3 = 246.94, Cs4 = 277.18;
+  const D4 = 293.66, E4 = 329.63, Fs4 = 369.99, G4 = 392.00, A4 = 440.00, B4 = 493.88, Cs5 = 554.37, D5 = 587.33;
+
+  // Romantic Love Theme: "Can't Help Falling In Love"
+  const melodyNotes = [
+    // Measure 1 - "Wise men say..." (D)
+    { f: A4, d: 0.85 }, { f: Fs4, d: 0.85 }, { f: D4, d: 1.4 },
+    // Measure 2 - "Only fools rush in..." (A/C#)
+    { f: E4, d: 0.45 }, { f: Fs4, d: 0.45 }, { f: G4, d: 0.75 }, { f: Fs4, d: 0.45 }, { f: E4, d: 1.4 },
+    // Measure 3 - "But I can't help..." (Bm)
+    { f: Fs4, d: 0.5 }, { f: G4, d: 0.5 }, { f: A4, d: 0.75 }, { f: B4, d: 1.4 },
+    // Measure 4 - "Falling in love with you..." (G - A - D)
+    { f: A4, d: 0.6 }, { f: G4, d: 0.4 }, { f: Fs4, d: 0.6 }, { f: E4, d: 0.6 }, { f: D4, d: 2.2 },
+    // Measure 5 - "Shall I stay..." (D)
+    { f: A4, d: 0.85 }, { f: Fs4, d: 0.85 }, { f: D4, d: 1.4 },
+    // Measure 6 - "Would it be a sin..." (A/C#)
+    { f: E4, d: 0.45 }, { f: Fs4, d: 0.45 }, { f: G4, d: 0.75 }, { f: Fs4, d: 0.45 }, { f: E4, d: 1.4 },
+    // Measure 7 - "If I can't help..." (Bm)
+    { f: Fs4, d: 0.5 }, { f: G4, d: 0.5 }, { f: A4, d: 0.75 }, { f: B4, d: 1.4 },
+    // Measure 8 - "Falling in love with you..." (G - A - D)
+    { f: A4, d: 0.6 }, { f: G4, d: 0.4 }, { f: Fs4, d: 0.6 }, { f: E4, d: 0.6 }, { f: D4, d: 2.2 },
+    // Measure 9 - Bridge: "Like a river flows..." (F#m - C#m)
+    { f: Cs5, d: 0.5 }, { f: B4, d: 0.4 }, { f: A4, d: 0.6 }, { f: B4, d: 0.4 }, { f: Cs5, d: 1.4 },
+    // Measure 10 - "Surely to the sea..."
+    { f: B4, d: 0.5 }, { f: A4, d: 0.4 }, { f: G4, d: 0.6 }, { f: A4, d: 0.4 }, { f: B4, d: 1.4 },
+    // Measure 11 - "Darling so it goes..."
+    { f: Cs5, d: 0.5 }, { f: B4, d: 0.4 }, { f: A4, d: 0.6 }, { f: B4, d: 0.4 }, { f: Cs5, d: 1.4 },
+    // Measure 12 - "Some things are meant to be..." (Em7 - A7)
+    { f: D5, d: 0.6 }, { f: Cs5, d: 0.5 }, { f: B4, d: 0.6 }, { f: A4, d: 1.8 },
+    // Measure 13 - "Take my hand..." (D)
+    { f: A4, d: 0.85 }, { f: Fs4, d: 0.85 }, { f: D4, d: 1.4 },
+    // Measure 14 - "Take my whole life too..." (A/C#)
+    { f: E4, d: 0.45 }, { f: Fs4, d: 0.45 }, { f: G4, d: 0.75 }, { f: Fs4, d: 0.45 }, { f: E4, d: 1.4 },
+    // Measure 15 - "For I can't help..." (Bm)
+    { f: Fs4, d: 0.5 }, { f: G4, d: 0.5 }, { f: A4, d: 0.75 }, { f: B4, d: 1.4 },
+    // Measure 16 - "Falling in love with you..." (G - A - D)
+    { f: A4, d: 0.6 }, { f: G4, d: 0.4 }, { f: Fs4, d: 0.6 }, { f: E4, d: 0.6 }, { f: D4, d: 2.8 }
+  ];
+
+  let melodyIdx = 0;
+  function tickMelody() {
+    if (!isMusicPlaying) return;
+    const note = melodyNotes[melodyIdx];
+    if (note && note.f > 0) {
+      playRomanticMusicBoxNote(note.f, ctx.currentTime, note.d * 1.35, 0.24);
+    }
+    melodyIdx = (melodyIdx + 1) % melodyNotes.length;
+    musicTimer = setTimeout(tickMelody, (note ? note.d : 1.0) * 1000);
+  }
+  tickMelody();
+
+  // Romantic Harp Arpeggios & Soft Cello Bass Pads
+  const arpeggioChords = [
+    // D
+    { root: D3, notes: [D4, Fs4, A4, D5, A4, Fs4] },
+    // A/C#
+    { root: Cs4, notes: [Cs4, E4, A4, E5, A4, E4] },
+    // Bm
+    { root: B3, notes: [B3, D4, Fs4, B4, Fs4, D4] },
+    // G - A
+    { root: G3, notes: [G3, B3, D4, G4, A4, D4] },
+    // D
+    { root: D3, notes: [D4, Fs4, A4, D5, A4, Fs4] },
+    // A/C#
+    { root: Cs4, notes: [Cs4, E4, A4, E5, A4, E4] },
+    // Bm
+    { root: B3, notes: [B3, D4, Fs4, B4, Fs4, D4] },
+    // G - D
+    { root: G3, notes: [G3, B3, D4, G4, Fs4, D4] },
+    // F#m
+    { root: Fs3, notes: [Fs3, A3, Cs4, Fs4, Cs4, A3] },
+    // C#m / Bm
+    { root: B3, notes: [B3, D4, Fs4, B4, Fs4, D4] },
+    // F#m
+    { root: Fs3, notes: [Fs3, A3, Cs4, Fs4, Cs4, A3] },
+    // Em7 - A7
+    { root: E3, notes: [E3, G3, B3, E4, Cs4, A3] },
+    // D
+    { root: D3, notes: [D4, Fs4, A4, D5, A4, Fs4] },
+    // A/C#
+    { root: Cs4, notes: [Cs4, E4, A4, E5, A4, E4] },
+    // Bm
+    { root: B3, notes: [B3, D4, Fs4, B4, Fs4, D4] },
+    // G - D
+    { root: G3, notes: [G3, B3, D4, G4, A4, D4] }
+  ];
+
+  let chordIdx = 0;
+  let arpStep = 0;
+
+  accompTimer = setInterval(() => {
+    if (!isMusicPlaying) return;
+    const chord = arpeggioChords[chordIdx];
+    if (arpStep === 0) {
+      // Play warm cello bass pad at start of measure
+      playWarmCelloPad(chord.root, ctx.currentTime, 2.2, 0.08);
+    }
+    // Play gentle harp arpeggio note
+    const arpFreq = chord.notes[arpStep % chord.notes.length];
+    playRomanticMusicBoxNote(arpFreq, ctx.currentTime, 1.2, 0.11);
+
+    arpStep++;
+    if (arpStep >= chord.notes.length) {
+      arpStep = 0;
+      chordIdx = (chordIdx + 1) % arpeggioChords.length;
+    }
+  }, 420);
+}
+
+window.playTrack = function (trackKey) {
+  isMusicPlaying = true;
+  const bgm = document.getElementById('romantic-bgm-audio');
+  if (bgm) {
+    bgm.volume = 0.65;
+    bgm.loop = true;
+    bgm.play().catch(() => {
+      // Fallback to procedurally synthesized music box if audio element blocked
+      startRomanticLoveMelody();
+    });
+  } else {
+    startRomanticLoveMelody();
+  }
+};
+
+/* ==========================================================================
+   3. BIRTHDAY COUNTDOWN (20TH SEPTEMBER 12:00 AM)
+   ========================================================================== */
+function initBirthdayCountdown() {
+  const daysEl = document.getElementById('bday-days');
+  const hoursEl = document.getElementById('bday-hours');
+  const minsEl = document.getElementById('bday-minutes');
+  const secsEl = document.getElementById('bday-seconds');
+  const statusEl = document.getElementById('countdown-status');
+
+  if (!daysEl) return;
+
+  const targetDate = new Date('2026-09-20T00:00:00');
+
+  function update() {
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      if (daysEl) daysEl.textContent = '00';
+      if (hoursEl) hoursEl.textContent = '00';
+      if (minsEl) minsEl.textContent = '00';
+      if (secsEl) secsEl.textContent = '00';
+      if (statusEl) statusEl.textContent = "🎉 It's September 20th! HAPPY 23RD BIRTHDAY MY LOVE! 👑💖";
+      return;
+    }
+
+    const totalSecs = Math.floor(diff / 1000);
+    const days = Math.floor(totalSecs / (3600 * 24));
+    const hours = Math.floor((totalSecs % (3600 * 24)) / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+
+    if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+    if (minsEl) minsEl.textContent = String(mins).padStart(2, '0');
+    if (secsEl) secsEl.textContent = String(secs).padStart(2, '0');
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
+/* ==========================================================================
+   4. INTERACTIVE 3-TIER CAKE CEREMONY (CATS APPEAR ON BLOW + CHAOTIC CELEBRATION)
+   ========================================================================== */
+function initCakeCeremony() {
+  const candles = document.querySelectorAll('.candle');
+  const replayBtn = document.getElementById('replay-ceremony-btn');
+  const celebrationBanner = document.getElementById('celebration-banner');
+  const instruction = document.getElementById('cake-instruction');
+  const catAudio = document.getElementById('cat-birthday-audio');
+  const catLeft = document.getElementById('flank-cat-left');
+  const catRight = document.getElementById('flank-cat-right');
+
+  let blownCount = 0;
+  const totalCandles = candles.length;
+
+  function showFlankingCats() {
+    if (catLeft) catLeft.classList.add('visible');
+    if (catRight) catRight.classList.add('visible');
+
+    // Duck romantic background piano gently while cats sing
+    const bgm = document.getElementById('romantic-bgm-audio');
+    if (bgm) bgm.volume = 0.22;
+
+    if (catAudio) {
+      // Keep singing continuously once started; do not restart from 0 on every candle blow
+      if (catAudio.paused) {
+        catAudio.currentTime = 0;
+        catAudio.volume = 1.0;
+        catAudio.loop = true;
+        catAudio.play().catch(() => { });
+      }
+    }
+  }
+
+  function hideFlankingCats() {
+    if (catLeft) catLeft.classList.remove('visible');
+    if (catRight) catRight.classList.remove('visible');
+    if (catAudio) {
+      catAudio.pause();
+      catAudio.currentTime = 0;
+    }
+    // Restore romantic piano volume
+    const bgm = document.getElementById('romantic-bgm-audio');
+    if (bgm) bgm.volume = 0.65;
+  }
+
+  // Individual Candle Blowing
+  function blowOutCandle(candle) {
+    if (candle.classList.contains('blown')) return;
+    candle.classList.add('blown');
+    blownCount++;
+
+    // 1. Realistic Multi-Particle Smoke Fumes
+    const smokeWrap = candle.querySelector('.smoke-puff-wrapper');
+    if (smokeWrap) {
+      smokeWrap.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const fume = document.createElement('span');
+        fume.className = 'smoke-fume-particle';
+        const size = 12 + i * 5;
+        fume.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${-6 + (i * 4) + (Math.random() * 6 - 3)}px;
+          top: -12px;
+          animation-duration: ${1.8 + i * 0.3}s;
+          animation-delay: ${i * 0.12}s;
+        `;
+        smokeWrap.appendChild(fume);
+      }
+    }
+
+    // 2. Play blow sound
+    if (window.playSound && window.playSound.blow) {
+      window.playSound.blow();
+    }
+
+    // 3. Firecrackers & Confetti Spark Burst
+    const rect = candle.getBoundingClientRect();
+    if (window.triggerConfettiExplosion) {
+      window.triggerConfettiExplosion(rect.left + rect.width / 2, rect.top + 10, 30);
+    }
+
+    // 4. Launch 4-5 celebratory balloons/hearts
+    spawnCelebrationBalloons(rect.left + rect.width / 2, 4);
+
+    // 5. Cats appear as soon as the candles blow along with song!
+    showFlankingCats();
+
+    // 6. When all candles are blown: CELEBRATION! (No screen shake)
+    if (blownCount >= totalCandles) {
+      if (instruction) {
+        instruction.innerHTML = "✨ All candles blown! All your sweetest birthday wishes are granted! 💖";
+      }
+      if (celebrationBanner) celebrationBanner.classList.remove('hidden');
+      if (replayBtn) replayBtn.classList.remove('hidden');
+
+      // Rapid-Fire Fireworks Barrage
+      if (window.triggerFireworksExplosion) {
+        window.triggerFireworksExplosion();
+        setTimeout(() => window.triggerFireworksExplosion(), 800);
+      }
+
+      // Multiple Massive Confetti Cannons
+      if (window.triggerConfettiExplosion) {
+        window.triggerConfettiExplosion(window.innerWidth * 0.25, window.innerHeight * 0.45, 90);
+        window.triggerConfettiExplosion(window.innerWidth * 0.50, window.innerHeight * 0.40, 150);
+        window.triggerConfettiExplosion(window.innerWidth * 0.75, window.innerHeight * 0.45, 90);
+      }
+
+      if (window.playSound && window.playSound.chime) {
+        window.playSound.chime();
+      }
+
+      // Swarm of balloons rising from bottom
+      for (let b = 0; b < 18; b++) {
+        setTimeout(() => {
+          spawnCelebrationBalloons(window.innerWidth * (0.1 + Math.random() * 0.8), 2);
+        }, b * 160);
+      }
+    }
+  }
+
+  function spawnCelebrationBalloons(originX, count = 3) {
+    const container = document.getElementById('balloon-container');
+    if (!container) return;
+
+    const balloonIcons = ['🎈', '💖', '💕', '🍓', '✨', '🌸', '👑', '🎂', '🥳'];
+    for (let i = 0; i < count; i++) {
+      const b = document.createElement('div');
+      b.className = 'poppable-balloon';
+      b.textContent = balloonIcons[Math.floor(Math.random() * balloonIcons.length)];
+      b.style.fontSize = `${Math.random() * 1.5 + 1.8}rem`;
+      const offset = (Math.random() * 140) - 70;
+      b.style.left = `${Math.max(5, Math.min(window.innerWidth - 40, originX + offset))}px`;
+      b.style.animationDuration = `${Math.random() * 4 + 7}s`;
+      container.appendChild(b);
+
+      setTimeout(() => {
+        if (b.parentNode) b.remove();
+      }, 12000);
+    }
+  }
+
+  candles.forEach(candle => {
+    candle.addEventListener('click', () => blowOutCandle(candle));
+  });
+
+  // Replay Celebration
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => {
+      blownCount = 0;
+      candles.forEach(c => {
+        c.classList.remove('blown');
+        const smoke = c.querySelector('.smoke-puff-wrapper');
+        if (smoke) smoke.innerHTML = '';
+      });
+      if (celebrationBanner) celebrationBanner.classList.add('hidden');
+      replayBtn.classList.add('hidden');
+      if (instruction) {
+        instruction.textContent = "Make a wish, my love! Tap each candle one by one to blow the flames! ✨";
+      }
+      hideFlankingCats();
+    });
+  }
+}
+
+/* ==========================================================================
+   5. RELATIONSHIP LOVE COUNTER (SINCE 6TH JUNE 2025)
    ========================================================================== */
 function initLoveCounter() {
-  // Approximate anniversary: 1 year, 3 months ago from Sep 2026 -> June 18, 2025
-  const startDate = new Date('2025-06-18T00:00:00');
+  const daysElem = document.getElementById('days-count');
+  if (!daysElem) return;
+
+  const startDate = new Date('2025-06-06T00:00:00');
 
   function update() {
     const now = new Date();
@@ -39,7 +803,6 @@ function initLoveCounter() {
     const totalHours = Math.floor(totalMinutes / 60);
     const totalDays = Math.floor(totalHours / 24);
 
-    const daysElem = document.getElementById('days-count');
     const hoursElem = document.getElementById('hours-count');
     const minsElem = document.getElementById('minutes-count');
     const secsElem = document.getElementById('seconds-count');
@@ -55,318 +818,624 @@ function initLoveCounter() {
 }
 
 /* ==========================================================================
-   2. WEB AUDIO API SYNTHESIZER (No external audio file dependencies needed!)
-   Plays:
-   - Soft Romantic Music Box Ambient loop
-   - "Happy Birthday To You" chime melody upon cake cutting
-   - Candle blow whoosh, knife slice chime, cracker pops, heart clinks
+   6. CUPID'S BOW & ARROW GAME (SYNCHRONIZED BOW PHYSICS, EASY HIT, ENVELOPE LOOP)
    ========================================================================== */
-let audioCtx = null;
-let isMusicPlaying = false;
-let ambientInterval = null;
+function initCupidArchery() {
+  const shootBtn = document.getElementById('shoot-arrow-btn');
+  const arrow = document.getElementById('cupid-arrow');
+  const bowRig = document.getElementById('bow-arrow-rig');
+  const bowStringPath = document.getElementById('bow-string-svg-path');
+  const bowLimbPath = document.getElementById('bow-limb-path');
+  const bowLimbShadow = document.getElementById('bow-limb-shadow');
+  const bowTipLeft = document.getElementById('bow-tip-left');
+  const bowTipRight = document.getElementById('bow-tip-right');
+  const bowSvg = document.getElementById('cupid-bow-svg');
+  const aimTrajectory = document.getElementById('aim-trajectory');
+  const missIndicator = document.getElementById('archery-miss-indicator');
+  const targetHeartBox = document.getElementById('target-heart-box');
+  const targetBeatingHeart = document.getElementById('target-beating-heart');
+  const envelopeWrapper = document.getElementById('envelope-popup-wrapper');
+  const envelope = document.getElementById('romantic-envelope');
+  const letterUnfolded = document.getElementById('romantic-letter-unfolded');
+  const packLetterBtn = document.getElementById('pack-letter-btn');
+  const hintText = document.getElementById('archery-hint-text');
+  const archeryStage = document.getElementById('archery-stage');
 
-function initAudioEngine() {
-  const toggleBtn = document.getElementById('music-toggle-btn');
-  const btnText = document.getElementById('music-btn-text');
+  if (!shootBtn || !arrow || !archeryStage) return;
 
-  function getAudioContext() {
-    if (!audioCtx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
+  let isShooting = false;
+  let hasWon = false;
+  let isDraggingBow = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let currentAngle = 0;
+  let currentPower = 0;
+  let flightAnimId = null;
+
+  // Dynamically flex the bow limbs, tips, and string in perfect physical sync
+  function updateBowFlex(pullX, pullY) {
+    const tipDeflect = pullY * 0.14;
+    const stringNotchX = 80 + pullX * 0.4;
+    const stringNotchY = 70 + pullY;
+
+    // 1. Dynamic bowstring
+    if (bowStringPath) {
+      bowStringPath.setAttribute('d', `M 14 ${70 + tipDeflect} Q ${stringNotchX} ${stringNotchY} 146 ${70 + tipDeflect}`);
     }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    return audioCtx;
+
+    // 2. Dynamic bow limbs flexing under tension
+    const limbD = `M 14 ${70 + tipDeflect} C 32 ${20 + tipDeflect * 0.8}, 56 16, 80 20 C 104 16, 128 ${20 + tipDeflect * 0.8}, 146 ${70 + tipDeflect}`;
+    if (bowLimbPath) bowLimbPath.setAttribute('d', limbD);
+    if (bowLimbShadow) bowLimbShadow.setAttribute('d', limbD);
+
+    // 3. Tip golden caps track limb ends
+    if (bowTipLeft) bowTipLeft.setAttribute('cy', `${70 + tipDeflect}`);
+    if (bowTipRight) bowTipRight.setAttribute('cy', `${70 + tipDeflect}`);
   }
 
-  toggleBtn.addEventListener('click', () => {
-    const ctx = getAudioContext();
-    if (!isMusicPlaying) {
-      startAmbientMusic();
-      isMusicPlaying = true;
-      btnText.textContent = 'Pause Music ⏸';
-      toggleBtn.classList.add('playing');
-    } else {
-      stopAmbientMusic();
-      isMusicPlaying = false;
-      btnText.textContent = 'Play Romantic Music 🎵';
-      toggleBtn.classList.remove('playing');
+  // Restore bow limbs, tips, and string to neutral rest
+  function resetBowToRest() {
+    if (bowStringPath) bowStringPath.setAttribute('d', 'M 14 70 Q 80 70 146 70');
+    const restD = 'M 14 70 C 32 20, 56 14, 80 22 C 104 14, 128 20, 146 70';
+    if (bowLimbPath) bowLimbPath.setAttribute('d', restD);
+    if (bowLimbShadow) bowLimbShadow.setAttribute('d', restD);
+    if (bowTipLeft) bowTipLeft.setAttribute('cy', '70');
+    if (bowTipRight) bowTipRight.setAttribute('cy', '70');
+    if (bowSvg) bowSvg.style.transform = '';
+  }
+
+  // Bowstring release twang & spring recoil animation
+  function playBowRecoil() {
+    // Frame 1: snap forward past resting tension
+    if (bowStringPath) bowStringPath.setAttribute('d', 'M 14 70 Q 80 58 146 70');
+    if (bowSvg) bowSvg.style.transform = 'translateY(-2px)';
+
+    setTimeout(() => {
+      // Frame 2: rebound backward
+      if (bowStringPath) bowStringPath.setAttribute('d', 'M 14 70 Q 80 74 146 70');
+      if (bowSvg) bowSvg.style.transform = 'translateY(1px)';
+
+      setTimeout(() => {
+        // Frame 3: settle to rest
+        resetBowToRest();
+      }, 55);
+    }, 45);
+  }
+
+  // Instant heart pop helper
+  function popHeartDirectly() {
+    if (hasWon) return;
+    hasWon = true;
+    isShooting = false;
+
+    // Reset bowstring & bow flex
+    resetBowToRest();
+    if (aimTrajectory) aimTrajectory.classList.remove('active');
+
+    // Position arrow right into heart center
+    if (arrow && archeryStage && targetHeartBox) {
+      const stageRect = archeryStage.getBoundingClientRect();
+      const targetRect = targetHeartBox.getBoundingClientRect();
+      arrow.style.transition = 'all 0.15s ease-out';
+      arrow.style.position = 'absolute';
+      arrow.style.left = `${(targetRect.left + targetRect.width / 2 - stageRect.left) - 14}px`;
+      arrow.style.top = `${(targetRect.top + targetRect.height / 2 - stageRect.top) - 30}px`;
+      arrow.style.transform = 'scale(1.15) rotate(0deg)';
+      arrow.style.opacity = '1';
     }
+
+    handleHit();
+  }
+
+  function fireArrow(aimAngleDeg = 0, aimPower = 40) {
+    if (isShooting || hasWon) return;
+    isShooting = true;
+
+    // Twang sound
+    if (window.playSound && window.playSound.twang) {
+      window.playSound.twang();
+    } else if (window.playSound && window.playSound.arrow) {
+      window.playSound.arrow();
+    }
+
+    // Play string recoil & reset aim trajectory
+    playBowRecoil();
+    if (aimTrajectory) aimTrajectory.classList.remove('active');
+
+    // Starting position relative to archeryStage
+    const stageRect = archeryStage.getBoundingClientRect();
+    const arrowRect = arrow.getBoundingClientRect();
+
+    arrow.style.transition = 'none';
+    arrow.style.position = 'absolute';
+
+    let curX = (arrowRect.left + arrowRect.width / 2) - stageRect.left;
+    let curY = arrowRect.top - stageRect.top;
+
+    arrow.style.left = `${curX - 14}px`;
+    arrow.style.top = `${curY}px`;
+    arrow.style.transform = `rotate(${aimAngleDeg}deg)`;
+
+    function stepFlight() {
+      const currentArrowRect = arrow.getBoundingClientRect();
+      const currentTargetRect = targetHeartBox ? targetHeartBox.getBoundingClientRect() : null;
+
+      if (currentTargetRect) {
+        const targetMidX = currentTargetRect.left + currentTargetRect.width / 2;
+        const targetMidY = currentTargetRect.top + currentTargetRect.height / 2;
+
+        // Sweet Cupid Homing: aggressively and smoothly guides arrow towards the moving heart!
+        const steer = (targetMidX - (curX + stageRect.left)) * 0.55;
+        curX += steer;
+        curY -= 20;
+
+        arrow.style.left = `${curX - 14}px`;
+        arrow.style.top = `${curY}px`;
+
+        // Dynamically tilt arrow tip slightly towards the target
+        const angle = Math.max(-25, Math.min(25, (targetMidX - (curX + stageRect.left)) * 0.4));
+        arrow.style.transform = `rotate(${angle}deg)`;
+
+        // Direct Hit! When arrow reaches target altitude (generous hit zone):
+        if (currentArrowRect.top <= currentTargetRect.bottom + 55) {
+          cancelAnimationFrame(flightAnimId);
+          arrow.style.left = `${(targetMidX - stageRect.left) - 14}px`;
+          arrow.style.top = `${(targetMidY - stageRect.top) - 30}px`;
+          arrow.style.transform = 'scale(1.15) rotate(0deg)';
+          handleHit();
+          return;
+        }
+      } else {
+        curY -= 20;
+        arrow.style.top = `${curY}px`;
+      }
+
+      // Reached top -> direct hit guaranteed
+      if (curY <= -20) {
+        cancelAnimationFrame(flightAnimId);
+        popHeartDirectly();
+        return;
+      }
+
+      flightAnimId = requestAnimationFrame(stepFlight);
+    }
+
+    flightAnimId = requestAnimationFrame(stepFlight);
+  }
+
+  function handleHit() {
+    hasWon = true;
+    isShooting = false;
+
+    // Celebratory effects
+    if (targetHeartBox) targetHeartBox.classList.add('heart-hit');
+
+    if (window.playSound && window.playSound.pop) window.playSound.pop();
+    if (window.playSound && window.playSound.chime) window.playSound.chime();
+
+    const rect = targetBeatingHeart ? targetBeatingHeart.getBoundingClientRect() : { left: window.innerWidth / 2, top: 200 };
+    if (window.triggerConfettiExplosion) {
+      window.triggerConfettiExplosion(rect.left + 25, rect.top + 25, 80);
+    }
+
+    if (hintText) {
+      hintText.textContent = "💘 DIRECT HIT! Cupid's arrow pierced my heart! Tap the envelope below! ✨";
+      hintText.style.color = '#c9184a';
+    }
+    shootBtn.textContent = '💌 Heart Captured! Open Your Envelope!';
+    shootBtn.disabled = true;
+    shootBtn.style.opacity = '0.9';
+
+    // Reveal 3D Envelope Popup
+    if (envelopeWrapper) {
+      envelopeWrapper.classList.remove('hidden');
+      setTimeout(() => {
+        envelopeWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 350);
+    }
+  }
+
+  function handleMiss() {
+    if (window.playSound && window.playSound.miss) {
+      window.playSound.miss();
+    }
+
+    arrow.classList.add('missed');
+
+    // Show floating miss notification
+    if (missIndicator) {
+      missIndicator.classList.remove('hidden');
+      missIndicator.style.animation = 'none';
+      missIndicator.offsetHeight; // trigger reflow
+      missIndicator.style.animation = '';
+      setTimeout(() => {
+        missIndicator.classList.add('hidden');
+      }, 1400);
+    }
+
+    if (hintText) {
+      hintText.textContent = "💨 Missed! Time your shot as the heart glides past! Try again!";
+      hintText.style.color = '#b7094c';
+    }
+    shootBtn.textContent = "🏹 Try Again (Drag Bow or Tap)";
+
+    // Smoothly reload arrow back onto bow after 600ms
+    setTimeout(() => {
+      arrow.classList.remove('missed');
+      arrow.style.transition = 'opacity 0.25s ease';
+      arrow.style.opacity = '0';
+
+      setTimeout(() => {
+        arrow.style.position = '';
+        arrow.style.left = '';
+        arrow.style.top = '';
+        arrow.style.transform = 'translateY(18px)';
+        arrow.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+        arrow.style.opacity = '1';
+
+        requestAnimationFrame(() => {
+          arrow.style.transform = '';
+          setTimeout(() => {
+            arrow.style.transition = '';
+            isShooting = false;
+            if (!hasWon && hintText) {
+              hintText.textContent = "🎯 Drag bow down & release when the heart aligns!";
+              hintText.style.color = '';
+            }
+          }, 250);
+        });
+      }, 200);
+    }, 600);
+  }
+
+  // Shoot button click: smooth synchronized draw-and-release animation
+  shootBtn.addEventListener('click', () => {
+    if (isShooting || hasWon) return;
+
+    isShooting = true;
+    let drawProgress = 0;
+    const drawDuration = 120;
+    const startDraw = performance.now();
+
+    function animateDraw(now) {
+      const elapsed = now - startDraw;
+      drawProgress = Math.min(1, elapsed / drawDuration);
+      const ease = 0.5 - Math.cos(drawProgress * Math.PI) / 2;
+      const pullY = ease * 36;
+
+      updateBowFlex(0, pullY);
+      arrow.style.transform = `translateY(${pullY}px)`;
+
+      if (drawProgress < 1) {
+        requestAnimationFrame(animateDraw);
+      } else {
+        isShooting = false;
+        fireArrow(0, 45);
+      }
+    }
+
+    requestAnimationFrame(animateDraw);
   });
 
-  // Expose sound effects to window
-  window.playSound = {
-    blow: playCandleBlowSFX,
-    slice: playSliceSFX,
-    pop: playCrackerPopSFX,
-    chime: playChimeSFX,
-    birthdaySong: playHappyBirthdaySong
-  };
-
-  function playBellNote(freq, startTime, duration = 1.2, gainLevel = 0.15) {
-    if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, startTime);
-
-    // Warm harmonics
-    const osc2 = audioCtx.createOscillator();
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(freq * 2, startTime);
-    const gain2 = audioCtx.createGain();
-    gain2.gain.setValueAtTime(gainLevel * 0.3, startTime);
-    gain2.gain.exponentialRampToValueAtTime(0.0001, startTime + duration * 0.7);
-
-    gain.gain.setValueAtTime(0.0001, startTime);
-    gain.gain.linearRampToValueAtTime(gainLevel, startTime + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-
-    osc.connect(gain);
-    osc2.connect(gain2);
-    gain.connect(audioCtx.destination);
-    gain2.connect(audioCtx.destination);
-
-    osc.start(startTime);
-    osc2.start(startTime);
-    osc.stop(startTime + duration);
-    osc2.stop(startTime + duration);
+  // Direct Tap on the Moving Heart: pops immediately on Android touch and desktop click!
+  if (targetHeartBox) {
+    targetHeartBox.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popHeartDirectly();
+    });
+    targetHeartBox.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      popHeartDirectly();
+    }, { passive: true });
   }
 
-  // Soft romantic music box arpeggios
-  const romanticScale = [
-    261.63, 329.63, 392.00, 523.25, // C E G C
-    293.66, 349.23, 440.00, 587.33, // D F A D
-    329.63, 392.00, 493.88, 659.25, // E G B E
-    349.23, 440.00, 523.25, 698.46  // F A C F
-  ];
-
-  function startAmbientMusic() {
-    const ctx = getAudioContext();
-    let step = 0;
-    const pattern = [0, 2, 1, 3, 2, 4, 3, 5, 2, 4, 1, 3, 6, 8, 7, 9];
-
-    ambientInterval = setInterval(() => {
-      if (!isMusicPlaying || !audioCtx) return;
-      const noteIdx = pattern[step % pattern.length];
-      const freq = romanticScale[noteIdx % romanticScale.length];
-      playBellNote(freq, audioCtx.currentTime, 1.4, 0.1);
-      step++;
-    }, 420);
-  }
-
-  function stopAmbientMusic() {
-    if (ambientInterval) {
-      clearInterval(ambientInterval);
-      ambientInterval = null;
-    }
-  }
-
-  function playCandleBlowSFX() {
-    const ctx = getAudioContext();
-    const bufferSize = ctx.sampleRate * 0.35;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
+  // Drag-to-Aim Bow Mechanism (Supports Android touch & mouse via pointer events)
+  if (bowRig) {
+    function onBowDragStart(e) {
+      if (isShooting || hasWon) return;
+      isDraggingBow = true;
+      const pt = (e.touches && e.touches[0]) ? e.touches[0] : e;
+      dragStartX = pt.clientX;
+      dragStartY = pt.clientY;
+      currentAngle = 0;
+      currentPower = 0;
+      if (aimTrajectory) aimTrajectory.classList.add('active');
     }
 
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
+    function onBowDragMove(e) {
+      if (!isDraggingBow) return;
+      const pt = (e.touches && e.touches[0]) ? e.touches[0] : e;
+      const deltaX = pt.clientX - dragStartX;
+      const deltaY = pt.clientY - dragStartY;
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(450, ctx.currentTime);
-    filter.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.3);
+      const pullY = Math.max(0, Math.min(52, deltaY));
+      const pullX = Math.max(-42, Math.min(42, deltaX));
 
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.18, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      currentAngle = -Math.atan2(pullX, Math.max(22, pullY)) * (180 / Math.PI);
+      currentAngle = Math.max(-28, Math.min(28, currentAngle));
+      currentPower = pullY;
 
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
+      updateBowFlex(pullX, pullY);
+      arrow.style.transform = `translate(${pullX * 0.4}px, ${pullY}px) rotate(${currentAngle}deg)`;
 
-    noise.start();
+      if (aimTrajectory) {
+        aimTrajectory.style.transform = `translateX(-50%) rotate(${currentAngle}deg)`;
+      }
+
+      if (hintText && pullY > 15) {
+        hintText.textContent = "🎯 Aiming... Release to shoot Cupid's arrow!";
+      }
+    }
+
+    function onBowDragEnd() {
+      if (!isDraggingBow) return;
+      isDraggingBow = false;
+
+      if (currentPower < 8) {
+        resetBowToRest();
+        arrow.style.transform = '';
+        if (aimTrajectory) aimTrajectory.classList.remove('active');
+        return;
+      }
+
+      fireArrow(currentAngle, currentPower);
+    }
+
+    bowRig.addEventListener('pointerdown', onBowDragStart);
+    window.addEventListener('pointermove', onBowDragMove);
+    window.addEventListener('pointerup', onBowDragEnd);
+    window.addEventListener('pointercancel', onBowDragEnd);
+
+    bowRig.addEventListener('touchstart', onBowDragStart, { passive: true });
+    window.addEventListener('touchmove', onBowDragMove, { passive: true });
+    window.addEventListener('touchend', onBowDragEnd);
   }
 
-  function playSliceSFX() {
-    const ctx = getAudioContext();
-    playBellNote(587.33, ctx.currentTime, 0.6, 0.15); // D5
-    playBellNote(880.00, ctx.currentTime + 0.08, 0.8, 0.12); // A5
+  // Tap on Envelope to Unseal and Slide Out Letter
+  if (envelope) {
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('unsealed');
+      if (window.playSound && window.playSound.pop) {
+        window.playSound.pop();
+      }
+
+      setTimeout(() => {
+        if (letterUnfolded) {
+          letterUnfolded.classList.remove('hidden');
+          letterUnfolded.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 400);
+    });
   }
 
-  function playCrackerPopSFX() {
-    const ctx = getAudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(150, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.15);
+  // Put Letter Back in Envelope & Reset Archery Game Loop
+  if (packLetterBtn) {
+    packLetterBtn.addEventListener('click', () => {
+      if (letterUnfolded) letterUnfolded.classList.add('hidden');
+      if (envelope) envelope.classList.remove('unsealed');
+      if (envelopeWrapper) envelopeWrapper.classList.add('hidden');
 
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      isShooting = false;
+      hasWon = false;
+      if (targetHeartBox) targetHeartBox.classList.remove('heart-hit');
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.18);
-  }
+      if (flightAnimId) cancelAnimationFrame(flightAnimId);
 
-  function playChimeSFX() {
-    const ctx = getAudioContext();
-    playBellNote(659.25, ctx.currentTime, 0.5, 0.12); // E5
-    playBellNote(783.99, ctx.currentTime + 0.07, 0.7, 0.15); // G5
-  }
+      arrow.style.position = '';
+      arrow.style.left = '';
+      arrow.style.top = '';
+      arrow.style.transform = '';
+      arrow.style.opacity = '1';
+      arrow.classList.remove('missed');
 
-  function playHappyBirthdaySong() {
-    const ctx = getAudioContext();
-    // Notes for "Happy Birthday To You":
-    // G4 G4 A4 G4 C5 B4 | G4 G4 A4 G4 D5 C5 | G4 G4 G5 E5 C5 B4 A4 | F5 F5 E5 C5 D5 C5
-    const song = [
-      { note: 392.00, dur: 0.35, pause: 0.1 },  // Hap-
-      { note: 392.00, dur: 0.25, pause: 0.05 }, // py
-      { note: 440.00, dur: 0.6,  pause: 0.1 },  // birth-
-      { note: 392.00, dur: 0.6,  pause: 0.1 },  // day
-      { note: 523.25, dur: 0.6,  pause: 0.1 },  // to
-      { note: 493.88, dur: 1.1,  pause: 0.3 },  // you
-      
-      { note: 392.00, dur: 0.35, pause: 0.1 },  // Hap-
-      { note: 392.00, dur: 0.25, pause: 0.05 }, // py
-      { note: 440.00, dur: 0.6,  pause: 0.1 },  // birth-
-      { note: 392.00, dur: 0.6,  pause: 0.1 },  // day
-      { note: 587.33, dur: 0.6,  pause: 0.1 },  // to
-      { note: 523.25, dur: 1.1,  pause: 0.3 },  // you
-      
-      { note: 392.00, dur: 0.35, pause: 0.1 },  // Hap-
-      { note: 392.00, dur: 0.25, pause: 0.05 }, // py
-      { note: 783.99, dur: 0.6,  pause: 0.1 },  // birth-
-      { note: 659.25, dur: 0.6,  pause: 0.1 },  // day
-      { note: 523.25, dur: 0.6,  pause: 0.1 },  // dear
-      { note: 493.88, dur: 0.6,  pause: 0.1 },  // Chan-
-      { note: 440.00, dur: 1.0,  pause: 0.3 },  // da-na
-      
-      { note: 698.46, dur: 0.35, pause: 0.1 },  // Hap-
-      { note: 698.46, dur: 0.25, pause: 0.05 }, // py
-      { note: 659.25, dur: 0.6,  pause: 0.1 },  // birth-
-      { note: 523.25, dur: 0.6,  pause: 0.1 },  // day
-      { note: 587.33, dur: 0.8,  pause: 0.1 },  // to
-      { note: 523.25, dur: 1.6,  pause: 0.5 },  // you!
-    ];
+      resetBowToRest();
+      if (aimTrajectory) aimTrajectory.classList.remove('active');
 
-    let cursor = ctx.currentTime + 0.1;
-    song.forEach(item => {
-      playBellNote(item.note, cursor, item.dur + 0.4, 0.22);
-      cursor += item.dur + item.pause;
+      shootBtn.disabled = false;
+      shootBtn.style.opacity = '1';
+      shootBtn.textContent = "🏹 Release Cupid's Arrow!";
+      if (hintText) {
+        hintText.textContent = "🎯 Drag bow down & release when the heart aligns!";
+        hintText.style.color = '';
+      }
+
+      if (archeryStage) archeryStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   }
 }
 
 /* ==========================================================================
-   3. BACKGROUND PARTICLES & CURSOR SPARKLES
+   7. AMBIENT BACKGROUND PARTICLES & BALLOONS (STRICTLY IN BACKGROUND)
+   ========================================================================== */
+function initPoppableBalloons() {
+  const container = document.getElementById('balloon-container');
+  if (!container) return;
+
+  const balloonIcons = ['🎈', '💖', '💕', '💗', '🍓', '✨', '🌸', '🧸', '🎂'];
+
+  function spawnBackgroundParticle() {
+    if (document.hidden) return;
+    const item = document.createElement('div');
+    item.className = 'poppable-balloon';
+
+    const icon = balloonIcons[Math.floor(Math.random() * balloonIcons.length)];
+    item.textContent = icon;
+    item.style.fontSize = `${Math.random() * 1.5 + 1.6}rem`;
+    item.style.left = `${Math.random() * 92 + 4}%`;
+    item.style.animationDuration = `${Math.random() * 5 + 8}s`;
+
+    container.appendChild(item);
+
+    setTimeout(() => {
+      if (item.parentNode) item.remove();
+    }, 14000);
+  }
+
+  setInterval(spawnBackgroundParticle, 1200);
+}
+
+/* ==========================================================================
+   8. HER 23 PORTRAITS GALLERY & COUPLE SLIDESHOW (FROM captions.js & localStorage)
+   ========================================================================== */
+function initGalleryAndSlideshow() {
+  // 1. Render 23 Solo Portraits directly from captions.js
+  const portraitGrid = document.getElementById('portrait-grid') || document.getElementById('her-photo-grid');
+  let portraitsToRender = (typeof HER_PORTRAITS !== 'undefined') ? HER_PORTRAITS.slice(0, 23) : [];
+
+  // Sync with localStorage so editor stays in sync
+  try {
+    localStorage.setItem('chandana_solo_captions', JSON.stringify(portraitsToRender));
+  } catch (e) { }
+
+  if (portraitGrid && portraitsToRender.length > 0) {
+    portraitGrid.innerHTML = '';
+    portraitsToRender.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'portrait-card';
+      card.innerHTML = `
+        <div class="portrait-img-box">
+          <img src="${item.src}" alt="Dr. Chandana Portrait ${index + 1}" class="portrait-img" loading="lazy">
+        </div>
+        <p class="portrait-caption">${item.caption || "Pure magic ✨"}</p>
+      `;
+      portraitGrid.appendChild(card);
+    });
+  }
+
+  // 2. Render Couple Slideshow - STRICTLY NO CAPTIONS! Just keep them sliding!
+  const slidesTrack = document.getElementById('slides-track');
+  const dotsContainer = document.getElementById('slideshow-dots');
+  const prevBtn = document.getElementById('slide-prev-btn');
+  const nextBtn = document.getElementById('slide-next-btn');
+
+  if (slidesTrack && typeof COUPLE_PHOTOS !== 'undefined') {
+    slidesTrack.innerHTML = '';
+    if (dotsContainer) dotsContainer.innerHTML = '';
+
+    COUPLE_PHOTOS.forEach((photo, idx) => {
+      const slide = document.createElement('div');
+      slide.className = `slide-item ${idx === 0 ? 'active' : ''}`;
+      // Clean sliding image without any caption overlay
+      slide.innerHTML = `
+        <img src="${photo.src}" alt="Our Memory ${idx + 1}" class="slide-img" loading="lazy">
+      `;
+      slidesTrack.appendChild(slide);
+
+      if (dotsContainer) {
+        const dot = document.createElement('span');
+        dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+        dot.addEventListener('click', () => goToSlide(idx));
+        dotsContainer.appendChild(dot);
+      }
+    });
+
+    let currentSlide = 0;
+    const slides = slidesTrack.querySelectorAll('.slide-item');
+    const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
+
+    function goToSlide(n) {
+      if (slides.length === 0) return;
+      slides[currentSlide].classList.remove('active');
+      if (dots[currentSlide]) dots[currentSlide].classList.remove('active');
+
+      currentSlide = (n + slides.length) % slides.length;
+
+      slides[currentSlide].classList.add('active');
+      if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    // Touch Swipe for Android
+    let touchStartX = 0;
+    slidesTrack.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    slidesTrack.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 35) {
+        if (diff > 0) {
+          goToSlide(currentSlide + 1);
+        } else {
+          goToSlide(currentSlide - 1);
+        }
+      }
+    }, { passive: true });
+
+    // Smooth auto-slide every 4.5 seconds
+    setInterval(() => {
+      if (!document.hidden) {
+        goToSlide(currentSlide + 1);
+      }
+    }, 4500);
+  }
+
+  // Render Heartfelt Notes
+  const notesGrid = document.getElementById('notes-grid');
+  if (notesGrid && typeof HEARTFELT_NOTES !== 'undefined') {
+    notesGrid.innerHTML = '';
+    HEARTFELT_NOTES.forEach(note => {
+      const card = document.createElement('div');
+      card.className = 'note-card';
+      card.innerHTML = `
+        <h4 class="note-title">${note.title}</h4>
+        <p class="note-body">${note.content}</p>
+      `;
+      notesGrid.appendChild(card);
+    });
+  }
+}
+
+/* ==========================================================================
+   9. BACKGROUND PARTICLES & CELEBRATION CANVASES
    ========================================================================== */
 function initBackgroundSparkles() {
   const canvas = document.getElementById('sparkle-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let width = (canvas.width = window.innerWidth);
-  let height = (canvas.height = window.innerHeight);
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
 
-  window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-  });
+  const sparkles = [];
+  const sparkleCount = Math.min(35, Math.floor(window.innerWidth / 35));
 
-  const particles = [];
-  const particleIcons = ['🌸', '✨', '💖', '💕', '⭐'];
-
-  for (let i = 0; i < 35; i++) {
-    particles.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
+  for (let i = 0; i < sparkleCount; i++) {
+    sparkles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
       size: Math.random() * 14 + 10,
-      icon: particleIcons[Math.floor(Math.random() * particleIcons.length)],
-      speedY: Math.random() * 0.8 + 0.3,
-      speedX: (Math.random() - 0.5) * 0.6,
-      opacity: Math.random() * 0.6 + 0.2,
-      rotation: Math.random() * 360,
-      rotSpeed: (Math.random() - 0.5) * 1.5
+      speedY: Math.random() * 0.4 + 0.15,
+      speedX: Math.sin(Math.random() * Math.PI) * 0.25,
+      char: ['✨', '🌸', '💖', '🎀'][Math.floor(Math.random() * 4)],
+      opacity: Math.random() * 0.6 + 0.3
     });
   }
 
-  // Cursor trail
-  const cursorSparks = [];
-  window.addEventListener('mousemove', (e) => {
-    if (Math.random() < 0.4) {
-      cursorSparks.push({
-        x: e.clientX,
-        y: e.clientY,
-        size: Math.random() * 12 + 8,
-        icon: Math.random() > 0.5 ? '✨' : '💖',
-        life: 1,
-        speedX: (Math.random() - 0.5) * 2,
-        speedY: (Math.random() - 0.5) * 2 - 0.5
-      });
-    }
-  });
-
-  function animate() {
-    ctx.clearRect(0, 0, width, height);
-
-    // Floating petals/hearts
-    particles.forEach(p => {
-      p.y += p.speedY;
-      p.x += p.speedX;
-      p.rotation += p.rotSpeed;
-
-      if (p.y > height + 20) p.y = -20;
-      if (p.x > width + 20) p.x = -20;
-      if (p.x < -20) p.x = width + 20;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate((p.rotation * Math.PI) / 180);
-      ctx.globalAlpha = p.opacity;
-      ctx.font = `${p.size}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(p.icon, 0, 0);
-      ctx.restore();
-    });
-
-    // Cursor sparks
-    for (let i = cursorSparks.length - 1; i >= 0; i--) {
-      const s = cursorSparks[i];
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    sparkles.forEach(s => {
+      s.y -= s.speedY;
       s.x += s.speedX;
-      s.y += s.speedY;
-      s.life -= 0.025;
-
-      if (s.life <= 0) {
-        cursorSparks.splice(i, 1);
-        continue;
+      if (s.y < -20) {
+        s.y = canvas.height + 10;
+        s.x = Math.random() * canvas.width;
       }
-
-      ctx.save();
-      ctx.globalAlpha = s.life;
+      ctx.globalAlpha = s.opacity;
       ctx.font = `${s.size}px serif`;
-      ctx.fillText(s.icon, s.x, s.y);
-      ctx.restore();
-    }
-
-    requestAnimationFrame(animate);
+      ctx.fillText(s.char, s.x, s.y);
+    });
+    requestAnimationFrame(loop);
   }
-
-  animate();
+  loop();
 }
-
-/* ==========================================================================
-   4. FULL-SCREEN CONFETTI & FIREWORKS SYSTEM
-   ========================================================================== */
-let triggerConfettiExplosion = () => {};
-let triggerFireworksExplosion = () => {};
 
 function initConfettiAndFireworks() {
   const confCanvas = document.getElementById('confetti-canvas');
@@ -377,112 +1446,82 @@ function initConfettiAndFireworks() {
   const fireCtx = fireCanvas.getContext('2d');
 
   function resize() {
-    confCanvas.width = fireCanvas.width = window.innerWidth;
-    confCanvas.height = fireCanvas.height = window.innerHeight;
+    confCanvas.width = window.innerWidth;
+    confCanvas.height = window.innerHeight;
+    fireCanvas.width = window.innerWidth;
+    fireCanvas.height = window.innerHeight;
   }
   window.addEventListener('resize', resize);
   resize();
 
-  // Confetti Pieces
+  const confettiColors = ['#ff4d6d', '#ff8fa3', '#ffd1dc', '#ffd700', '#ffffff', '#c58882'];
   let confettis = [];
-  const confettiColors = ['#ff3366', '#ff758c', '#ffccd5', '#ffd700', '#70e000', '#00b4d8', '#ffffff'];
 
-  triggerConfettiExplosion = function(x = window.innerWidth / 2, y = window.innerHeight / 2, count = 180) {
+  window.triggerConfettiExplosion = function (originX, originY, count = 60) {
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 14 + 5;
+      const speed = Math.random() * 8 + 3;
       confettis.push({
-        x: x,
-        y: y,
+        x: originX,
+        y: originY,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 4,
-        size: Math.random() * 9 + 5,
+        vy: Math.sin(angle) * speed - 2.5,
+        size: Math.random() * 8 + 4,
         color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-        tilt: Math.random() * 10,
-        tiltSpeed: Math.random() * 0.2 + 0.05,
-        opacity: 1,
-        shape: Math.random() > 0.4 ? 'rect' : 'heart'
+        opacity: 1
       });
     }
   };
 
-  // Fireworks rockets and particles
   let fireworks = [];
-
-  triggerFireworksExplosion = function() {
-    for (let f = 0; f < 5; f++) {
+  window.triggerFireworksExplosion = function () {
+    for (let f = 0; f < 6; f++) {
       setTimeout(() => {
         const targetX = Math.random() * (window.innerWidth * 0.7) + window.innerWidth * 0.15;
-        const targetY = Math.random() * (window.innerHeight * 0.45) + 80;
-        createFireworkBurst(targetX, targetY);
-        if (window.playSound) window.playSound.pop();
-      }, f * 350);
+        const targetY = Math.random() * (window.innerHeight * 0.45) + 60;
+        const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        for (let i = 0; i < 50; i++) {
+          const angle = (Math.PI * 2 * i) / 50;
+          const speed = Math.random() * 7 + 3;
+          fireworks.push({
+            x: targetX,
+            y: targetY,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            color: color,
+            life: 1,
+            decay: Math.random() * 0.02 + 0.015
+          });
+        }
+      }, f * 250);
     }
   };
 
-  function createFireworkBurst(x, y) {
-    const pCount = 70;
-    const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
-    for (let i = 0; i < pCount; i++) {
-      const angle = (Math.PI * 2 * i) / pCount;
-      const speed = Math.random() * 8 + 3;
-      fireworks.push({
-        x: x,
-        y: y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        color: color,
-        life: 1,
-        decay: Math.random() * 0.015 + 0.015,
-        trail: []
-      });
-    }
-  }
-
   function loop() {
-    // Render confetti
     confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
     for (let i = confettis.length - 1; i >= 0; i--) {
       const c = confettis[i];
       c.x += c.vx;
       c.y += c.vy;
-      c.vy += 0.28; // gravity
-      c.vx *= 0.98;
-      c.tilt += c.tiltSpeed;
-      c.opacity -= 0.004;
+      c.vy += 0.22;
+      c.opacity -= 0.008;
 
-      if (c.y > confCanvas.height || c.opacity <= 0) {
+      if (c.opacity <= 0) {
         confettis.splice(i, 1);
         continue;
       }
 
-      confCtx.save();
-      confCtx.globalAlpha = c.opacity;
+      confCtx.globalAlpha = Math.max(0, c.opacity);
       confCtx.fillStyle = c.color;
-      confCtx.translate(c.x, c.y);
-      confCtx.rotate(c.tilt);
-
-      if (c.shape === 'heart') {
-        confCtx.font = `${c.size * 1.5}px serif`;
-        confCtx.fillText('💖', 0, 0);
-      } else {
-        confCtx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 1.3);
-      }
-      confCtx.restore();
+      confCtx.fillRect(c.x, c.y, c.size, c.size * 0.6);
     }
 
-    // Render fireworks
-    fireCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-    fireCtx.fillRect(0, 0, fireCanvas.width, fireCanvas.height);
     fireCtx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
-
     for (let i = fireworks.length - 1; i >= 0; i--) {
       const p = fireworks[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.12; // light gravity
-      p.vx *= 0.96;
-      p.vy *= 0.96;
+      p.vy += 0.06;
       p.life -= p.decay;
 
       if (p.life <= 0) {
@@ -490,489 +1529,14 @@ function initConfettiAndFireworks() {
         continue;
       }
 
-      fireCtx.save();
       fireCtx.globalAlpha = p.life;
       fireCtx.fillStyle = p.color;
       fireCtx.beginPath();
-      fireCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      fireCtx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
       fireCtx.fill();
-      fireCtx.restore();
     }
 
     requestAnimationFrame(loop);
   }
-
   loop();
-}
-
-/* ==========================================================================
-   5. INTERACTIVE CAKE CEREMONY (BLOW CANDLES & CUT SLICE)
-   ========================================================================== */
-function initCakeCeremony() {
-  const candles = document.querySelectorAll('.candle');
-  const blowAllBtn = document.getElementById('blow-candles-btn');
-  const cutCakeBtn = document.getElementById('cut-cake-btn');
-  const replayBtn = document.getElementById('replay-ceremony-btn');
-  const cakeKnife = document.getElementById('cake-knife');
-  const cakeBody = document.getElementById('cake-body');
-  const servedSlice = document.getElementById('served-slice');
-  const celebrationBanner = document.getElementById('celebration-banner');
-  const instruction = document.getElementById('cake-instruction');
-
-  let blownCandlesCount = 0;
-  const totalCandles = candles.length;
-  let isSliced = false;
-
-  // Candle blow interaction (click or tap)
-  candles.forEach(candle => {
-    candle.addEventListener('click', () => {
-      blowOutCandle(candle);
-    });
-
-    // Also support hover blow on desktop
-    candle.addEventListener('mouseenter', () => {
-      blowOutCandle(candle);
-    });
-  });
-
-  function blowOutCandle(candle) {
-    if (candle.classList.contains('blown')) return;
-    candle.classList.add('blown');
-    blownCandlesCount++;
-
-    if (window.playSound) window.playSound.blow();
-
-    checkAllCandlesBlown();
-  }
-
-  // Blow All Button
-  blowAllBtn.addEventListener('click', () => {
-    candles.forEach((candle, idx) => {
-      setTimeout(() => {
-        blowOutCandle(candle);
-      }, idx * 120);
-    });
-  });
-
-  function checkAllCandlesBlown() {
-    if (blownCandlesCount >= totalCandles) {
-      instruction.textContent = "All candles are blown! ✨ Pick up the knife and cut your birthday cake! 🎂";
-      blowAllBtn.classList.add('hidden');
-      cutCakeBtn.classList.remove('hidden');
-      cakeKnife.classList.add('visible');
-
-      // Small celebration burst
-      triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.45, 60);
-      if (window.playSound) window.playSound.chime();
-    }
-  }
-
-  // Knife cutting interaction
-  cutCakeBtn.addEventListener('click', performCakeCut);
-  cakeKnife.addEventListener('click', performCakeCut);
-
-  function performCakeCut() {
-    if (isSliced) return;
-    isSliced = true;
-
-    instruction.textContent = "Happy 23rd Birthday Chandana! Making your wishes come true! ✨";
-    cakeKnife.classList.add('cutting');
-
-    if (window.playSound) {
-      window.playSound.slice();
-    }
-
-    setTimeout(() => {
-      cakeBody.classList.add('sliced');
-      servedSlice.classList.add('active');
-      cutCakeBtn.classList.add('hidden');
-      replayBtn.classList.remove('hidden');
-      celebrationBanner.classList.remove('hidden');
-
-      // GRAND CELEBRATION!
-      triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.4, 250);
-      triggerFireworksExplosion();
-
-      // Recurring celebration showers
-      const celebrationInterval = setInterval(() => {
-        triggerConfettiExplosion(Math.random() * window.innerWidth, window.innerHeight * 0.35, 80);
-      }, 1400);
-
-      // Stop recurring confetti after 9 seconds
-      setTimeout(() => clearInterval(celebrationInterval), 9000);
-
-      // Play sweet Happy Birthday melody
-      if (window.playSound) {
-        window.playSound.birthdaySong();
-      }
-    }, 600);
-  }
-
-  // Replay Ceremony
-  replayBtn.addEventListener('click', () => {
-    isSliced = false;
-    blownCandlesCount = 0;
-    candles.forEach(c => c.classList.remove('blown'));
-    cakeBody.classList.remove('sliced');
-    servedSlice.classList.remove('active');
-    cakeKnife.classList.remove('cutting');
-    cakeKnife.classList.remove('visible');
-    celebrationBanner.classList.add('hidden');
-    replayBtn.classList.add('hidden');
-    blowAllBtn.classList.remove('hidden');
-    instruction.textContent = "Tap or hover over each candle to blow it out, or tap 'Blow All Candles' to make your 23rd wish!";
-  });
-}
-
-/* ==========================================================================
-   6. INTERACTIVE LOVE JAR ("WHY YOU'RE MY FAVOURITE")
-   ========================================================================== */
-function initLoveJar() {
-  const loveJar = document.getElementById('love-jar');
-  const nextNoteBtn = document.getElementById('next-note-btn');
-  const cardTitle = document.getElementById('note-card-title');
-  const cardText = document.getElementById('note-card-text');
-
-  const loveNotes = [
-    {
-      title: "Reason #1: That Unmatched Smile ✨",
-      text: "You're studying to be a BDS doctor, but honestly, your smile is already a masterpiece that cures everything!"
-    },
-    {
-      title: "Reason #2: Your Caring Heart 💖",
-      text: "The way you check in on me, worry about my meals, and put so much empathy into your patients and loved ones."
-    },
-    {
-      title: "Reason #3: 1 Year & 3 Months of Us 🌸",
-      text: "Every day with you feels as exciting and fluttery as day one. You are my safe place and favorite destination."
-    },
-    {
-      title: "Reason #4: Your Hard Work in BDS 🩺",
-      text: "Watching you balance lectures, clinical postings, teeth carvings, and revision with so much dedication inspires me constantly."
-    },
-    {
-      title: "Reason #5: The Cutest Pouts & Laughs 🤭",
-      text: "Whenever you get dramatic, laugh at my silly jokes, or make that adorable face—my heart just melts completely."
-    },
-    {
-      title: "Reason #6: You're My Best Friend 💍",
-      text: "I don't just love you as my girlfriend—you are the first person I want to tell everything to, good or bad."
-    },
-    {
-      title: "Reason #7: You Look Stunning in Everything 👑",
-      text: "Whether you're in scrubs, a gorgeous dress, traditional attire, or sleepy morning pajamas—you are effortlessly the prettiest girl."
-    },
-    {
-      title: "Reason #8: Our Inside Jokes & Memories 💌",
-      text: "15 months filled with shared secret glances, late night phone calls, food cravings, and memories I cherish forever."
-    }
-  ];
-
-  let currentNoteIdx = 0;
-
-  function pullNote() {
-    currentNoteIdx = (currentNoteIdx + 1) % loveNotes.length;
-    const note = loveNotes[currentNoteIdx];
-
-    cardTitle.textContent = note.title;
-    cardText.textContent = `"${note.text}"`;
-
-    if (window.playSound) window.playSound.chime();
-    triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.6, 30);
-  }
-
-  loveJar.addEventListener('click', pullNote);
-  nextNoteBtn.addEventListener('click', pullNote);
-}
-
-/* ==========================================================================
-   7. HER POLAROID GALLERY (25 PHOTOS) & FULLSCREEN LIGHTBOX
-   ========================================================================== */
-function initHerGallery() {
-  const grid = document.getElementById('her-photo-grid');
-  const filterChips = document.querySelectorAll('.filter-chip');
-  if (!grid) return;
-
-  // The 25 photos of Chandana
-  const photos = [
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.56 PM.jpeg', caption: 'The smile that lights up my whole universe 🌟', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.57 PM (2).jpeg', caption: 'Pure grace & birthday elegance ✨', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.58 PM (1).jpeg', caption: 'My gorgeous future Dr. Chandana 🩺', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.58 PM (2).jpeg', caption: 'Captivating eyes and endless charm 💖', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.58 PM.jpeg', caption: 'Cutest candid expression ever 🤭', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.14.59 PM.jpeg', caption: 'Radiating pure sunshine & joy ☀️', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.00 PM (1).jpeg', caption: 'Princess vibes, 23 & fabulous 👑', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.02 PM (1).jpeg', caption: 'How did I get this lucky? 💕', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.03 PM (1).jpeg', caption: 'Sweetest moments frozen in time 📸', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.03 PM (2).jpeg', caption: 'Effortlessly stunning from every angle ✨', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.03 PM.jpeg', caption: 'The queen of my heart 👸', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.04 PM (1).jpeg', caption: 'Gentle warmth and endless beauty 🌸', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.04 PM.jpeg', caption: 'My favorite portrait of you 🎨', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.05 PM (1).jpeg', caption: 'Happy, glowing, and thriving 🌟', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.05 PM.jpeg', caption: 'Every picture of you tells a love story 💌', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.06 PM (1).jpeg', caption: 'Natural beauty at its finest 💫', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.06 PM.jpeg', caption: 'The prettiest smile in the room 💖', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.07 PM (1).jpeg', caption: 'Charming me since day one ✨', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.07 PM.jpeg', caption: 'Perfection in a single frame 🌹', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.11 PM.jpeg', caption: 'Dazzling on your special day 🎉', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.12 PM (1).jpeg', caption: 'Forever my sweetest blessing 🎀', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.15.12 PM.jpeg', caption: 'Beauty, brains, and kindness combined 🩺', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.17.20 PM.jpeg', caption: 'Dreamy eyes and tender heart 🕊️', category: 'glamour' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.17.21 PM (1).jpeg', caption: 'Celebrating 23 wonderful years of you 🎂', category: 'favorites' },
-    { src: 'WhatsApp Image 2026-09-18 at 1.17.21 PM.jpeg', caption: 'My forever birthday girl Chandana 💕', category: 'glamour' }
-  ];
-
-  function renderPhotos(filter = 'all') {
-    grid.innerHTML = '';
-    const filtered = filter === 'all' ? photos : photos.filter(p => p.category === filter);
-
-    filtered.forEach((p, idx) => {
-      const card = document.createElement('div');
-      card.className = 'polaroid-card';
-      
-      // Slight romantic tilt between -3.5deg and 3.5deg
-      const randomTilt = ((idx % 5) - 2) * 1.6;
-      card.style.transform = `rotate(${randomTilt}deg)`;
-
-      card.innerHTML = `
-        <div class="polaroid-img-wrapper">
-          <img src="${encodeURI(p.src)}" alt="Chandana - Photo ${idx + 1}" loading="lazy">
-        </div>
-        <div class="polaroid-caption">${p.caption}</div>
-        <button class="polaroid-heart-btn" title="Send love">💖</button>
-      `;
-
-      // Open Lightbox on card click
-      card.addEventListener('click', (e) => {
-        if (e.target.classList.contains('polaroid-heart-btn')) {
-          e.stopPropagation();
-          triggerConfettiExplosion(e.clientX, e.clientY, 25);
-          if (window.playSound) window.playSound.chime();
-          return;
-        }
-        openLightbox(photos.indexOf(p));
-      });
-
-      grid.appendChild(card);
-    });
-  }
-
-  filterChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      filterChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      renderPhotos(chip.dataset.filter);
-    });
-  });
-
-  renderPhotos('all');
-
-  // Lightbox Modal Logic
-  const lightbox = document.getElementById('lightbox-modal');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxCaption = document.getElementById('lightbox-caption');
-  const closeBtn = document.getElementById('lightbox-close');
-  const overlay = document.getElementById('lightbox-overlay');
-  const prevBtn = document.getElementById('lightbox-prev');
-  const nextBtn = document.getElementById('lightbox-next');
-  const heartBtn = document.getElementById('lightbox-heart-btn');
-
-  let activePhotoIndex = 0;
-
-  function openLightbox(index) {
-    activePhotoIndex = index;
-    updateLightbox();
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = 'auto';
-  }
-
-  function updateLightbox() {
-    const photo = photos[activePhotoIndex];
-    lightboxImg.src = encodeURI(photo.src);
-    lightboxCaption.innerHTML = `
-      <h3>Chandana's 23rd Birthday ✨</h3>
-      <p>${photo.caption}</p>
-    `;
-  }
-
-  closeBtn.addEventListener('click', closeLightbox);
-  overlay.addEventListener('click', closeLightbox);
-
-  prevBtn.addEventListener('click', () => {
-    activePhotoIndex = (activePhotoIndex - 1 + photos.length) % photos.length;
-    updateLightbox();
-  });
-
-  nextBtn.addEventListener('click', () => {
-    activePhotoIndex = (activePhotoIndex + 1) % photos.length;
-    updateLightbox();
-  });
-
-  heartBtn.addEventListener('click', (e) => {
-    triggerConfettiExplosion(e.clientX, e.clientY, 50);
-    if (window.playSound) window.playSound.chime();
-  });
-
-  // Keyboard navigation
-  window.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') prevBtn.click();
-    if (e.key === 'ArrowRight') nextBtn.click();
-  });
-}
-
-/* ==========================================================================
-   8. COUPLE SCRAPBOOK SLIDER ('US/' FOLDER)
-   ========================================================================== */
-function initCoupleScrapbook() {
-  const track = document.getElementById('couple-photo-track');
-  const dotsContainer = document.getElementById('slider-dots');
-  const prevBtn = document.getElementById('slider-prev-btn');
-  const nextBtn = document.getElementById('slider-next-btn');
-  const captionTitle = document.getElementById('memory-caption-title');
-  const captionText = document.getElementById('memory-caption-text');
-  if (!track) return;
-
-  const couplePhotos = [
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.14.56 PM (1).jpeg', title: 'Chapter 1: The Beginning 💕', text: 'When two hearts clicked and a beautiful adventure started 15 months ago.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.14.57 PM (1).jpeg', title: 'Sweetest Dates & Warm Smiles ☕', text: 'No place is ever boring as long as you are sitting across from me.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.00 PM.jpeg', title: 'Walking Hand In Hand 👫', text: 'Through sunny days, dental exam stress, and every little victory.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.01 PM (1).jpeg', title: 'Comfort & Peace In Your Arms 🌸', text: 'Where the world goes quiet and everything feels just right.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.01 PM.jpeg', title: 'Our Favourite Memories ✨', text: 'Every picture captures just a fraction of the love we share.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.02 PM.jpeg', title: 'Side By Side, Always 💖', text: 'Cheering for your BDS dreams while building our future together.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.03 PM (3).jpeg', title: 'Unbreakable Bond 💍', text: '1 year and 3 months down, an entire lifetime of togetherness to go.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.07 PM (2).jpeg', title: 'You & Me Against The World 🌟', text: 'My favourite travel partner, food buddy, and confidante.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.08 PM.jpeg', title: 'Pure Happiness Captured 📸', text: 'Because loving you is the easiest, most natural thing in the world.' },
-    { src: 'us/WhatsApp Image 2026-09-18 at 1.15.10 PM.jpeg', title: 'Forever My Person 💌', text: 'Happy 23rd Birthday to my forever love, Chandana!' }
-  ];
-
-  let currentSlide = 0;
-
-  couplePhotos.forEach((item, idx) => {
-    // Track slide
-    const slide = document.createElement('div');
-    slide.className = 'scrapbook-slide';
-    slide.innerHTML = `
-      <div class="scrapbook-img-box">
-        <img src="${encodeURI(item.src)}" alt="Memory ${idx + 1}" loading="lazy">
-      </div>
-    `;
-    track.appendChild(slide);
-
-    // Dot
-    const dot = document.createElement('span');
-    dot.className = `dot ${idx === 0 ? 'active' : ''}`;
-    dot.addEventListener('click', () => goToSlide(idx));
-    dotsContainer.appendChild(dot);
-  });
-
-  function goToSlide(index) {
-    currentSlide = index;
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-    // Update dots
-    document.querySelectorAll('.slider-dots .dot').forEach((d, i) => {
-      d.classList.toggle('active', i === currentSlide);
-    });
-
-    // Update caption
-    captionTitle.textContent = couplePhotos[currentSlide].title;
-    captionText.textContent = `"${couplePhotos[currentSlide].text}"`;
-  }
-
-  prevBtn.addEventListener('click', () => {
-    currentSlide = (currentSlide - 1 + couplePhotos.length) % couplePhotos.length;
-    goToSlide(currentSlide);
-  });
-
-  nextBtn.addEventListener('click', () => {
-    currentSlide = (currentSlide + 1) % couplePhotos.length;
-    goToSlide(currentSlide);
-  });
-
-  // Touch swipe support for mobile
-  let touchStartX = 0;
-  track.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
-
-  track.addEventListener('touchend', (e) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX - touchEndX;
-    if (diff > 50) nextBtn.click();
-    if (diff < -50) prevBtn.click();
-  });
-}
-
-/* ==========================================================================
-   9. ROMANTIC LOVE LETTER & WAX SEAL
-   ========================================================================== */
-function initEnvelopeAndLetter() {
-  const waxSeal = document.getElementById('wax-seal');
-  const envelopeFlap = document.getElementById('envelope-flap');
-  const envelopeWrapper = document.getElementById('envelope-wrapper');
-  const letterPaper = document.getElementById('letter-paper');
-
-  if (!waxSeal || !letterPaper) return;
-
-  function unsealLetter() {
-    envelopeFlap.style.transform = 'rotateX(180deg)';
-    envelopeFlap.style.zIndex = '1';
-    waxSeal.style.transform = 'translateX(-50%) translateY(-20px) scale(0.8)';
-    waxSeal.style.opacity = '0';
-
-    if (window.playSound) window.playSound.slice();
-
-    setTimeout(() => {
-      envelopeWrapper.style.display = 'none';
-      letterPaper.classList.remove('hidden');
-      triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.7, 80);
-    }, 450);
-  }
-
-  waxSeal.addEventListener('click', unsealLetter);
-  envelopeWrapper.addEventListener('click', unsealLetter);
-}
-
-/* ==========================================================================
-   10. VIRTUAL BIRTHDAY GIFT BOX UNWRAPPING
-   ========================================================================== */
-function initGiftBox() {
-  const giftBox = document.getElementById('gift-box');
-  const vouchersGrid = document.getElementById('vouchers-grid');
-  if (!giftBox || !vouchersGrid) return;
-
-  let isOpened = false;
-
-  giftBox.addEventListener('click', () => {
-    if (isOpened) return;
-    isOpened = true;
-
-    giftBox.classList.add('opened');
-    if (window.playSound) window.playSound.pop();
-
-    triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight * 0.75, 120);
-
-    setTimeout(() => {
-      vouchersGrid.classList.remove('hidden');
-    }, 400);
-  });
-}
-
-/* ==========================================================================
-   11. BACK TO TOP SCROLL
-   ========================================================================== */
-function initBackToTop() {
-  const backBtn = document.getElementById('back-to-top-btn');
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
 }

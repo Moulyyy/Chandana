@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Surprises &amp; Arcade 🎁 • Gifts, Quiz &amp; Treats</title>
+  <meta name="description" content="Unbox Chandana's 23rd birthday gift, redeem romantic vouchers, take the couple's quiz, and spin the treat wheel.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Floating background particles & celebration canvases -->
+  <canvas id="sparkle-canvas"></canvas>
+  <canvas id="fireworks-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- UNIVERSAL ROMANTIC NAVBAR -->
+  <nav class="romantic-navbar">
+    <div class="nav-container">
+      <a href="./index.html" class="nav-brand">
+        <span class="brand-heart">💖</span>
+        <span>Dr. Chandana 🌸</span>
+      </a>
+
+      <ul class="nav-menu">
+        <li><a href="./index.html" class="nav-link">🎂 Home</a></li>
+        <li><a href="./gallery.html" class="nav-link">👑 Her Gallery</a></li>
+        <li><a href="./story.html" class="nav-link">💑 Our Story</a></li>
+        <li><a href="./letter.html" class="nav-link">💌 Love Vault</a></li>
+        <li><a href="./surprises.html" class="nav-link active">🎁 Surprises</a></li>
+      </ul>
+
+      <div class="nav-right-actions">
+        <div class="audio-control-container">
+          <button id="music-toggle-btn" class="glow-btn glass-pill" aria-label="Toggle Romantic Music">
+            <span class="music-icon">🎵</span>
+            <span id="music-btn-text">Play Music</span>
+          </button>
+        </div>
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="Open Navigation Menu">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer Overlay & Drawer -->
+  <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+  <aside class="mobile-drawer" id="mobile-drawer">
+    <div class="drawer-header">
+      <div class="nav-brand">
+        <span class="brand-heart">💖</span>
+        <span>Chandana's 23rd</span>
+      </div>
+      <button class="drawer-close" id="drawer-close-btn" aria-label="Close menu">&times;</button>
+    </div>
+    <ul class="drawer-links">
+      <li><a href="./index.html" class="drawer-link">🎂 Birthday Celebration</a></li>
+      <li><a href="./gallery.html" class="drawer-link">👑 The Queen's Gallery (25 Photos)</a></li>
+      <li><a href="./story.html" class="drawer-link">💑 Our 15-Month Story</a></li>
+      <li><a href="./letter.html" class="drawer-link">💌 Love Letter &amp; 23 Promises</a></li>
+      <li><a href="./surprises.html" class="drawer-link active">🎁 Birthday Arcade &amp; Vouchers</a></li>
+    </ul>
+    <div class="drawer-footer">
+      <p>Made with endless love 💕<br>1 Year &amp; 3 Months of Us</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="page-wrapper">
+    
+    <!-- Hero Section -->
+    <header class="hero-section text-center" style="padding-bottom: 2rem;">
+      <div class="floating-badge">
+        <span>🎁 Birthday Treats &amp; Games</span>
+      </div>
+      <h1 class="romantic-title">Birthday Surprises &amp; Arcade 🎉</h1>
+      <p class="subtitle">
+        Unwrap your virtual gift box, redeem romantic vouchers, test your memory in the couples quiz, 
+        and spin the wheel for treats!
+      </p>
+    </header>
+
+    <!-- SECTION 1: Virtual Birthday Gift Box & Claimable Vouchers -->
+    <section class="content-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Birthday Treat</span>
+        <h2 class="section-title">Open Your Surprise Gift 🎁</h2>
+        <p class="section-desc">Tap the gift box below to untie the ribbon and reveal your redeemable vouchers!</p>
+      </div>
+
+      <div class="gift-box-container text-center">
+        <div class="gift-box" id="gift-box" title="Tap to open!">
+          <div class="gift-lid" id="gift-lid">
+            <div class="gift-bow">🎀</div>
+            <div class="lid-ribbon"></div>
+          </div>
+          <div class="gift-base">
+            <div class="base-ribbon"></div>
+            <div class="gift-sparkles-inside">✨</div>
+          </div>
+          <div class="gift-tap-hint">Tap to unbox 🎁</div>
+        </div>
+
+        <!-- Revealed Birthday Vouchers with Claim Buttons -->
+        <div class="vouchers-grid hidden" id="vouchers-grid">
+          <!-- Voucher 1 -->
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #1</div>
+            <h4>Unlimited Warm Hugs &amp; Cuddles 🤗</h4>
+            <p>Valid anytime Chandana feels stressed, tired after dental clinics, or just needs love. Never expires!</p>
+            <span class="redeemed-tag">Available Forever 💖</span>
+            <button class="voucher-claim-btn" data-voucher="1">Claim Voucher ✨</button>
+          </div>
+
+          <!-- Voucher 2 -->
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #2</div>
+            <h4>Romantic Candlelight Dinner Date 🕯️</h4>
+            <p>Your favorite restaurant, favorite cuisine, dessert on me, and zero interruptions. Celebrating you!</p>
+            <span class="redeemed-tag">Ready to Claim 🍷</span>
+            <button class="voucher-claim-btn" data-voucher="2">Claim Voucher ✨</button>
+          </div>
+
+          <!-- Voucher 3 -->
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #3</div>
+            <h4>Personal BDS Study Break Butler ☕</h4>
+            <p>Late night revision snacks, coffee runs, back/shoulder massage, and quiet company on command.</p>
+            <span class="redeemed-tag">Always On Call 🩺</span>
+            <button class="voucher-claim-btn" data-voucher="3">Claim Voucher ✨</button>
+          </div>
+
+          <!-- Voucher 4 -->
+          <div class="voucher-card glass-card">
+            <div class="voucher-badge">VOUCHER #4</div>
+            <h4>The Golden Birthday Wish 🌟</h4>
+            <p>One free pass for anything you want me to do, buy, or plan for you. No questions asked!</p>
+            <span class="redeemed-tag">Your Command 👑</span>
+            <button class="voucher-claim-btn" data-voucher="4">Claim Voucher ✨</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Spin the Birthday Wheel of Treats -->
+    <section class="wheel-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Lucky Spin</span>
+        <h2 class="section-title">Spin Chandana's Wheel of Treats 🎡</h2>
+        <p class="section-desc">Spin the wheel to win cute romantic rewards to redeem with me today!</p>
+      </div>
+
+      <div class="wheel-container">
+        <div class="wheel-frame">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel-canvas" class="wheel-canvas" width="320" height="320"></canvas>
+          <div class="wheel-center-cap">💖</div>
+        </div>
+
+        <button id="spin-wheel-btn" class="glow-btn romantic-btn">
+          🎯 Spin The Wheel!
+        </button>
+
+        <div class="wheel-result" id="wheel-result">
+          Spin to see your birthday treat! ✨
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Romantic Couple's Quiz -->
+    <section class="quiz-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Romantic Trivia</span>
+        <h2 class="section-title">How Well Do You Know Us? 💕</h2>
+        <p class="section-desc">Test your memory of our 15-month love journey together!</p>
+      </div>
+
+      <div id="romantic-quiz-container">
+        <!-- Injected dynamically via app.js -->
+      </div>
+    </section>
+
+    <!-- SECTION 4: Birthday Whisper Wall -->
+    <section class="whisper-section">
+      <div class="section-header text-center">
+        <span class="section-tag">Leave A Note</span>
+        <h2 class="section-title">Leave A Birthday Whisper 💌</h2>
+        <p class="section-desc">Type a sweet message or birthday wish to pin onto our memories board!</p>
+      </div>
+
+      <div class="whisper-form-card glass-card">
+        <textarea id="whisper-input" class="whisper-input" placeholder="Type your sweet note, wish, or whisper here, Chandana... 💕"></textarea>
+        <div class="text-center">
+          <button id="post-whisper-btn" class="glow-btn romantic-btn-small">
+            📌 Pin Onto Memory Wall
+          </button>
+        </div>
+
+        <div class="wishes-board" id="wishes-board">
+          <!-- Populated from localStorage -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Return to Home Page Link -->
+    <div class="text-center" style="margin-top: 4rem;">
+      <a href="./index.html" class="glow-btn romantic-btn" style="text-decoration: none; display: inline-block;">
+        🎂 Return to Birthday Cake Ceremony →
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="romantic-footer text-center">
+      <div class="footer-hearts">💖 ✨ 🌸 ✨ 💖</div>
+      <p>Crafted with endless love for Chandana's 23rd Birthday</p>
+      <small>Celebrating 1 year, 3 months, and a lifetime more to go 💍</small>
+      <div class="back-to-top">
+        <button id="back-to-top-btn" class="glow-btn glass-pill">↑ Back to Top</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

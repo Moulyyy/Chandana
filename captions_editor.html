@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captions Editor 🌸 Dr. Chandana's Birthday</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff4d6d;
+      --deep-berry: #4a1223;
+      --soft-pink: #fff0f3;
+      --border-pink: #ffccd5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #fff0f3 0%, #ffd6e0 50%, #ffe3e8 100%);
+      color: var(--deep-berry);
+      padding-bottom: 6rem;
+      min-height: 100vh;
+    }
+
+    /* Top Sticky Action Bar */
+    .editor-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1.5px solid var(--border-pink);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(255, 77, 109, 0.1);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: #b7094c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4d6d, #d81b60);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(255, 77, 109, 0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 77, 109, 0.5);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #b7094c;
+      border: 1.5px solid var(--border-pink);
+    }
+    .btn-secondary:hover {
+      background: #ffe3e8;
+    }
+
+    .btn-link {
+      background: none;
+      color: #7e4657;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .btn-link:hover {
+      color: #b7094c;
+    }
+
+    /* Container */
+    .editor-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-intro {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-intro h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.6rem;
+      color: #b7094c;
+      margin-bottom: 0.5rem;
+    }
+    .section-intro p {
+      color: #7e4657;
+      font-size: 1.05rem;
+    }
+
+    .section-heading {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.2rem;
+      color: #b7094c;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px dashed var(--border-pink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Photo Grid */
+    .photo-editor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .photo-edit-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: 0 8px 25px rgba(255, 77, 109, 0.1);
+      border: 1.5px solid var(--border-pink);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease;
+    }
+    .photo-edit-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 35px rgba(255, 77, 109, 0.2);
+    }
+
+    .card-photo-box {
+      width: 100%;
+      height: 280px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #ffeef2;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .card-photo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .caption-input-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #7e4657;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .caption-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-pink);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      color: #4a1223;
+      background: #fffdfd;
+      resize: vertical;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .caption-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.2);
+    }
+
+    /* Floating Toast Notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #2b0b16;
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .toast-msg.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Modal for Copying Code */
+    .code-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .code-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .code-modal {
+      background: #ffffff;
+      width: 100%;
+      max-width: 700px;
+      max-height: 85vh;
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .code-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .code-modal-header h3 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: #b7094c;
+    }
+    .code-modal textarea {
+      flex: 1;
+      min-height: 320px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      background: #fdfdfd;
+      margin-bottom: 14px;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Actions Bar -->
+  <header class="editor-topbar">
+    <div class="brand-title">
+      <span>✍️</span>
+      <span>Dr. Chandana's Photo Captions Editor</span>
+    </div>
+    <div class="topbar-actions">
+      <a href="index.html" class="btn btn-link">← Back to Birthday Celebration</a>
+      <button class="btn btn-secondary" id="preview-code-btn">📄 View captions.js</button>
+      <button class="btn btn-primary" id="save-export-btn">💾 Copy Updated captions.js</button>
+      <button class="btn btn-primary" id="download-file-btn">📥 Download File</button>
+    </div>
+  </header>
+
+  <main class="editor-container">
+    <div class="section-intro">
+      <h1>Custom Captions Editor</h1>
+      <p>Write your personalized romantic captions beneath each of her 23 birthday portraits and your 10 couple memories. When finished, click <strong>"Copy Updated captions.js"</strong> or <strong>"Download File"</strong>!</p>
+    </div>
+
+    <!-- Section 1: Her 23 Solo Portraits -->
+    <h2 class="section-heading">👑 Dr. Chandana's 23 Solo Portraits (23rd Birthday)</h2>
+    <div class="photo-editor-grid" id="solo-editor-grid">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Section 2: Our 10 Couple Memories -->
+    <h2 class="section-heading">💑 Our 10 Couple Memories (15 Months Together)</h2>
+    <div class="photo-editor-grid" id="couple-editor-grid">
+      <!-- Generated dynamically -->
+    </div>
+  </main>
+
+  <!-- Modal for full code view -->
+  <div class="code-modal-overlay" id="code-modal">
+    <div class="code-modal">
+      <div class="code-modal-header">
+        <h3>Generated captions.js Code</h3>
+        <button class="btn btn-secondary" id="close-modal-btn">&times; Close</button>
+      </div>
+      <p style="font-size:0.85rem; color:#7e4657; margin-bottom:8px;">You can copy this complete text and paste it into <code>captions.js</code>:</p>
+      <textarea id="modal-code-area" readonly></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-primary" id="modal-copy-btn">📋 Copy Code to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toast">
+    <span id="toast-icon">✨</span>
+    <span id="toast-text">Captions updated!</span>
+  </div>
+
+  <!-- Include current captions.js -->
+  <script src="captions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const soloGrid = document.getElementById('solo-editor-grid');
+      const coupleGrid = document.getElementById('couple-editor-grid');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      const toastIcon = document.getElementById('toast-icon');
+
+      function showToast(msg, icon = '✨') {
+        toastText.textContent = msg;
+        toastIcon.textContent = icon;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+
+      // Check localStorage for saved drafts
+      const savedSolo = localStorage.getItem('chandana_solo_captions');
+      const savedCouple = localStorage.getItem('chandana_couple_captions');
+
+      const soloList = (savedSolo && JSON.parse(savedSolo)) || (typeof HER_PORTRAITS !== 'undefined' ? HER_PORTRAITS.slice(0, 23) : []);
+      const coupleList = (savedCouple && JSON.parse(savedCouple)) || (typeof COUPLE_PHOTOS !== 'undefined' ? COUPLE_PHOTOS : []);
+
+      // Render Solo Portraits
+      soloGrid.innerHTML = '';
+      soloList.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'photo-edit-card';
+        card.innerHTML = `
+          <div class="card-photo-box">
+            <span class="photo-badge">Portrait #${idx + 1}</span>
+            <img src="${item.src}" alt="Portrait ${idx + 1}" class="card-photo-img" loading="lazy">
+          </div>
+          <label class="caption-input-label">
+            <span>Caption for Photo #${idx + 1}</span>
+            <span style="font-size:0.75rem; color:#aaa;">${item.src.substring(0, 20)}...</span>
+          </label>
+          <textarea class="caption-textarea solo-caption-input" data-index="${idx}">${item.caption || ''}</textarea>
+        `;
+        soloGrid.appendChild(card);
+      });
+
+      // Render Couple Memories
+      coupleGrid.innerHTML = '';
+      coupleList.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'photo-edit-card';
+        card.innerHTML = `
+          <div class="card-photo-box">
+            <span class="photo-badge">Couple Memory #${idx + 1}</span>
+            <img src="${item.src}" alt="Couple Photo ${idx + 1}" class="card-photo-img" loading="lazy">
+          </div>
+          <label class="caption-input-label">
+            <span>Caption for Memory #${idx + 1}</span>
+            <span style="font-size:0.75rem; color:#aaa;">${item.src.substring(0, 20)}...</span>
+          </label>
+          <textarea class="caption-textarea couple-caption-input" data-index="${idx}">${item.caption || ''}</textarea>
+        `;
+        coupleGrid.appendChild(card);
+      });
+
+      // Auto-save on typing
+      function saveToLocalStorage() {
+        const currentSoloInputs = document.querySelectorAll('.solo-caption-input');
+        const updatedSolo = soloList.map((item, i) => ({
+          src: item.src,
+          caption: currentSoloInputs[i] ? currentSoloInputs[i].value : item.caption
+        }));
+
+        const currentCoupleInputs = document.querySelectorAll('.couple-caption-input');
+        const updatedCouple = coupleList.map((item, i) => ({
+          src: item.src,
+          caption: currentCoupleInputs[i] ? currentCoupleInputs[i].value : item.caption
+        }));
+
+        localStorage.setItem('chandana_solo_captions', JSON.stringify(updatedSolo));
+        localStorage.setItem('chandana_couple_captions', JSON.stringify(updatedCouple));
+      }
+
+      document.addEventListener('input', saveToLocalStorage);
+
+      // Generate complete JS code
+      function generateCaptionsJSCode() {
+        const currentSoloInputs = document.querySelectorAll('.solo-caption-input');
+        const updatedSolo = soloList.map((item, i) => ({
+          src: item.src,
+          caption: currentSoloInputs[i] ? currentSoloInputs[i].value.trim() : item.caption
+        }));
+
+        const currentCoupleInputs = document.querySelectorAll('.couple-caption-input');
+        const updatedCouple = coupleList.map((item, i) => ({
+          src: item.src,
+          caption: currentCoupleInputs[i] ? currentCoupleInputs[i].value.trim() : item.caption
+        }));
+
+        return `/**
+ * ==============================================================================
+ * CHANDANA'S BIRTHDAY - CUSTOM CAPTIONS & DATA TEMPLATE
+ * ==============================================================================
+ * Generated via captions_editor.html
+ * ==============================================================================
+ */
+
+// 1. WhatsApp Number Configuration
+const HER_PHONE_NUMBER = "91XXXXXXXXXX";
+
+// 2. Pre-filled WhatsApp romantic birthday message
+const WHATSAPP_MESSAGE_TEXT = "Happy 23rd Birthday my gorgeous Dr. Chandana! 💕🎂 You are the sweetest blessing in my life, and I love you with all my heart! ✨";
+
+// 3. Her 23 Solo Portraits with Unique Captions (Celebrating 23 Years)
+const HER_PORTRAITS = ${JSON.stringify(updatedSolo, null, 2)};
+
+// 4. Our 10 Couple Memories (Slideshow in \`us/\` folder)
+const COUPLE_PHOTOS = ${JSON.stringify(updatedCouple, null, 2)};
+
+// 5. Heartfelt Customizable Notes for Her 23rd Year
+const HEARTFELT_NOTES = typeof HEARTFELT_NOTES !== 'undefined' ? HEARTFELT_NOTES : [
+  {
+    title: "To My Future Doctor 🩺",
+    content: "Watching your passion, hard work, and dedication makes me fall in love with you more every single day. You will heal so many lives, but you've already healed my heart forever."
+  },
+  {
+    title: "That Million Dollar Smile 🌸",
+    content: "No matter how tough or chaotic a day gets, one look at your smile turns everything into pure paradise. Keep shining, my angel."
+  },
+  {
+    title: "15 Months of Paradise 💕",
+    content: "Since June 6th, 2025, every second with you has felt like a fairytale. Happy 23rd birthday, my forever girl!"
+  }
+];
+`;
+      }
+
+      // Copy Button
+      document.getElementById('save-export-btn').addEventListener('click', () => {
+        const code = generateCaptionsJSCode();
+        navigator.clipboard.writeText(code).then(() => {
+          showToast('Updated captions.js copied to clipboard! 📋', '🎉');
+        }).catch(() => {
+          showToast('Failed to auto-copy. Opening preview modal...', '⚠️');
+          openModal(code);
+        });
+      });
+
+      // Download Button
+      document.getElementById('download-file-btn').addEventListener('click', () => {
+        const code = generateCaptionsJSCode();
+        const blob = new Blob([code], { type: 'text/javascript' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'captions.js';
+        a.click();
+        showToast('Downloaded captions.js! Replace the file in folder. 💾', '✅');
+      });
+
+      // Preview Modal
+      const modal = document.getElementById('code-modal');
+      const modalCode = document.getElementById('modal-code-area');
+
+      function openModal(code) {
+        modalCode.value = code;
+        modal.classList.add('open');
+      }
+
+      document.getElementById('preview-code-btn').addEventListener('click', () => {
+        openModal(generateCaptionsJSCode());
+      });
+
+      document.getElementById('close-modal-btn').addEventListener('click', () => {
+        modal.classList.remove('open');
+      });
+
+      document.getElementById('modal-copy-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(modalCode.value).then(() => {
+          showToast('Code copied to clipboard! 📋', '🎉');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
